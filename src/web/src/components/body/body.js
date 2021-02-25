@@ -36,6 +36,10 @@ export default class NavBar extends Component {
     // message.info(code, 2)
     this.setState({showPage:changeObj[code]});
   }
+  previewStatus = (status)=>{
+    console.log(status);
+  }
+
   render() {
     return (
       <div className="bodyContent" >
@@ -65,7 +69,7 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1 
             ?<div className="noteList">
-              <NoteList />
+              <NoteList preview={this.previewStatus.bind(this)} />
               </div>
             :""
           }
@@ -74,6 +78,13 @@ export default class NavBar extends Component {
             ?<div className="editor">
               <Editor />
             </div>
+            :""
+          }
+          {
+            this.state.showPage == 2 
+            ?<div className="noteList">
+              <NoteList preview={this.previewStatus.bind(this)} isPersonal/>
+              </div>
             :""
           }
         </div>
