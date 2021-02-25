@@ -1,1 +1,6 @@
 @import '~antd/dist/antd.css';
+@import './assets/font/iconfont.css';
+
+.App,#root {
+  height:100%;
+}
