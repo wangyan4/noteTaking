@@ -4,9 +4,8 @@
 }
 .navList{
   flex: 1;
-  width:120px;
+  /* width:120px; */
   box-sizing: border-box;
-  /* border-right:2px solid #eee; */
 }
 .content {
   flex:9;
@@ -18,13 +17,20 @@
   padding:10px 5px 0;
   height: 100%;
   box-sizing: border-box;
-  /* border-right:2px solid #eee; */
+  border-left:2px solid rgba(255, 255, 255, 0.3);
   overflow: scroll;
   overflow-x: hidden;
 }
 .content .editor{
   flex:8;
 }
+.content .editorPreview{
+  flex:8;
+}
+.ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left{
+  border: none !important;
+}
+
 
 /* 设置滚动条的样式 */
 ::-webkit-scrollbar {
