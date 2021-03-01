@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 import Editor from '../Editor/editor';
 import NoteList from '../note/note';
+import http from '../../server';
 
 
 import './body.css';
@@ -53,7 +54,8 @@ export default class NavBar extends Component {
       collapsed: false,
       showPage: 1,
       isShow: true,
-      editItem: data[0],
+      editItem: {},
+      showItem: data[0],
       data: data,
       data1: data1,
       flag: false,
@@ -72,25 +74,50 @@ export default class NavBar extends Component {
       ground: "2",
       my: "3"
     }
-    this.setState({ showPage: changeObj[code], isShow: true, flag:false });
+    this.setState({ showPage: changeObj[code], isShow: true, flag: false });
   }
-  previewStatus = (editItem) => {
-    console.log(editItem);
-    this.setState({ editItem, isShow: editItem.flag, flag: editItem.preview }, () => {
-      console.log(this.state)
-    })
+  previewStatus = (currentItem) => {
+    // console.log(editItem);
+    let editItem = currentItem.item;
     if (editItem.preview) {
       this.preview.current.innerHTML = editItem.content;
     }
+    if (editItem._status == "edit") {
+      this.setState({ editItem, showItem: editItem, isShow: editItem.flag, flag: editItem.preview }, () => {
+        console.log(this.state)
+      })
+      return;
+    }
+    this.setState({ editItem, isShow: editItem.flag, flag: editItem.preview }, () => {
+      console.log(this.state)
+    })
   }
 
-  setModalVisible(modalVisible) {
-    this.setState({ modalVisible });
-  }
+  // setModalVisible(modalVisible) {
+  //   this.setState({ modalVisible });
+  // }
 
-  delItem = (editItem) => {
-    this.setModalVisible(true);
-    this.setState({ editItem });
+  delItem = (currentItem) => {
+    // this.setModalVisible(true);
+    let editItem = currentItem.item;
+    Modal.confirm({
+      title: '确认',
+      // icon: <ExclamationCircleOutlined />,
+      content: '确认要删除吗?',
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        let _this = this;
+        let newList = _.filter(_this.state.data, function (o) {
+          return o.id != editItem.id;
+        })
+        if (editItem.id == this.state.showItem.id && newList.length != 0) {
+          this.setState({ data: newList, editItem, showItem: newList[0] })
+        } else {
+          this.setState({ data: newList, editItem, showItem: { id: null, description: null, content: null, title: null } });
+        }
+      }
+    });
   }
 
   addItem = () => {
@@ -133,9 +160,9 @@ export default class NavBar extends Component {
               : null
           }
           {
-            this.state.showPage == 1
+            this.state.showPage == 1 && this.state.data.length
               ? <div className="editor">
-                <Editor editItem={this.state.editItem} />
+                <Editor editItem={this.state.showItem} />
               </div>
               : null
           }
@@ -147,12 +174,12 @@ export default class NavBar extends Component {
               : null
           }
           {
-              <div className="editorPreview" ref={this.preview} style={!this.state.flag?{display:"none"}:{display:"block"}}>
+            <div className="editorPreview" ref={this.preview} style={!this.state.flag ? { display: "none" } : { display: "block" }}>
 
-              </div>
+            </div>
           }
         </div>
-        <Modal
+        {/* <Modal
           title="删除"
           style={{ top: 20 }}
           visible={this.state.modalVisible}
@@ -167,7 +194,7 @@ export default class NavBar extends Component {
           onCancel={() => this.setModalVisible(false)}
         >
           <p>确认要删除吗?</p>
-        </Modal>
+        </Modal> */}
       </div>
     );
   }

@@ -7,10 +7,11 @@ import './editor.css'
 // import 'braft-editor/dist/output.css'
 import { message } from 'antd';
 
+let titleStr = "", descriptionStr="";
 const defaultStr = `
     <p></p>
-    <p class="title">标题:</p><br>
-    <p class="description">描述:</p><br><hr>
+    <p class="title">标题:${titleStr}</p><br>
+    <p class="description">描述:${descriptionStr}</p><br><hr>
 `;
 export default class Editor extends React.Component {
     
@@ -45,9 +46,16 @@ export default class Editor extends React.Component {
     // }
     componentWillReceiveProps (nextProps) {
         if(nextProps.editItem.id){
+            titleStr = nextProps.editItem.title;
+            descriptionStr = nextProps.editItem.title;
             this.setState({
                 editItem:nextProps.editItem,
                 editorState:BraftEditor.createEditorState(defaultStr + nextProps.editItem.content)
+            })
+        }else {
+            this.setState({
+                editItem:nextProps.editItem,
+                editorState:BraftEditor.createEditorState(null)
             })
         }
     }
