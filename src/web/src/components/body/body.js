@@ -4,7 +4,7 @@ import _ from 'loadsh';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  PieChartOutlined,
+  SnippetsFilled,
   DesktopOutlined,
   ContainerOutlined
 } from '@ant-design/icons';
@@ -93,12 +93,8 @@ export default class NavBar extends Component {
     })
   }
 
-  // setModalVisible(modalVisible) {
-  //   this.setState({ modalVisible });
-  // }
 
   delItem = (currentItem) => {
-    // this.setModalVisible(true);
     let editItem = currentItem.item;
     Modal.confirm({
       title: '确认',
@@ -138,13 +134,13 @@ export default class NavBar extends Component {
             <Button type="primary" onClick={this.toggleCollapsed} style={this.state.collapsed ? { width: 80 } : { width: "100%" }}>
               {React.createElement(this.state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined)}
             </Button>
-            <Menu.Item key="1" icon={<PieChartOutlined />} onClick={this.menuChange.bind(this, 'note')}>
+            <Menu.Item key="1" icon={<i className="iconfont iconbiji"></i>} onClick={this.menuChange.bind(this, 'note')}>
               笔记
             </Menu.Item>
-            <Menu.Item key="2" icon={<DesktopOutlined />} onClick={this.menuChange.bind(this, 'ground')}>
+            <Menu.Item key="2" icon={<i className="iconfont iconguangchang"></i>} onClick={this.menuChange.bind(this, 'ground')}>
               分享广场
             </Menu.Item>
-            <Menu.Item key="3" icon={<ContainerOutlined />} onClick={this.menuChange.bind(this, 'my')}>
+            <Menu.Item key="3" icon={<i className="iconfont iconwode"></i>} onClick={this.menuChange.bind(this, 'my')}>
               我的
             </Menu.Item>
           </Menu>
@@ -160,7 +156,7 @@ export default class NavBar extends Component {
               : null
           }
           {
-            this.state.showPage == 1 && this.state.data.length
+            this.state.showPage == 1
               ? <div className="editor">
                 <Editor editItem={this.state.showItem} />
               </div>
@@ -179,22 +175,6 @@ export default class NavBar extends Component {
             </div>
           }
         </div>
-        {/* <Modal
-          title="删除"
-          style={{ top: 20 }}
-          visible={this.state.modalVisible}
-          onOk={() => {
-            this.setModalVisible(false);
-            let _this = this;
-            let newList = _.filter(_this.state.data, function (o) {
-              return o.id != _this.state.editItem.id;
-            })
-            this.setState({ data: newList })
-          }}
-          onCancel={() => this.setModalVisible(false)}
-        >
-          <p>确认要删除吗?</p>
-        </Modal> */}
       </div>
     );
   }
