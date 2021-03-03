@@ -65,7 +65,7 @@ export default class NoteList extends Component {
                 >
                   <List.Item.Meta
                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-                    title={<a onClick={() => { this.editList(item.id, item.content, true) }}>{item.title}</a>}
+                    title={<a onClick={() => { this.previewList(item, true) }}>{item.title}</a>}
                     description={item.description}
                   />
                 </List.Item>
