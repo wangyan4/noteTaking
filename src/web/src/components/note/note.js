@@ -24,17 +24,17 @@ export default class NoteList extends Component {
   //删除当前列表项
   delList = (item) => {
     item._status = "delete";
-    this.props.delItem({item});
+    this.props.delItem({ item });
 
   }
   //广场预览分享数据
   previewList = (item, flag) => {
     item.preview = flag;
     item._status = "preview";
-    this.props.preview({item})
+    this.props.preview({ item })
   }
 
-  gitPull = (item,flag)=>{
+  gitClone = (item, flag) => {
     // message.info(JSON.stringify(item));
     Modal.confirm({
       title: '确认',
@@ -42,7 +42,7 @@ export default class NoteList extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        
+
       }
     });
   }
@@ -59,9 +59,9 @@ export default class NoteList extends Component {
               renderItem={item => (
                 <List.Item
                   actions={[
-                  <a key="list-loadmore-edit" onClick={() => { this.previewList(item, true) }}>预览</a>,
-                  <a style={{ marginRight: 30 }} key="list-loadmore-edit" onClick={() => { this.gitPull(item, false) }}>克隆</a>
-                ]}
+                    <a key="list-loadmore-edit" onClick={() => { this.previewList(item, true) }}>预览</a>,
+                    <a style={{ marginRight: 30 }} key="list-loadmore-clone" onClick={() => { this.gitClone(item, false) }}>克隆</a>
+                  ]}
                 >
                   <List.Item.Meta
                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
@@ -76,7 +76,7 @@ export default class NoteList extends Component {
               dataSource={listData}
               renderItem={item => (
                 <List.Item
-                  actions={ [<a style={{ marginLeft: 50 }} key="list-loadmore-edit" onClick={() => { this.editList(item, false) }}>编辑</a>, <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>]}
+                  actions={[<a style={{ marginLeft: 50 }} key="list-loadmore-edit" onClick={() => { this.editList(item, false) }}>编辑</a>, <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>]}
                 >
                   <List.Item.Meta
                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}

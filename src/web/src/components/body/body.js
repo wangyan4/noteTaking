@@ -3,10 +3,7 @@ import { Menu, Button, Modal } from 'antd';
 import _ from 'loadsh';
 import {
   MenuUnfoldOutlined,
-  MenuFoldOutlined,
-  SnippetsFilled,
-  DesktopOutlined,
-  ContainerOutlined
+  MenuFoldOutlined
 } from '@ant-design/icons';
 import Editor from '../Editor/editor';
 import NoteList from '../note/note';
@@ -52,14 +49,13 @@ export default class NavBar extends Component {
     this.preview = createRef();
     this.state = {
       collapsed: false,
-      showPage: 1,
-      isShow: true,
-      editItem: {},
-      showItem: data[0],
-      data: data,
-      data1: data1,
-      flag: false,
-      modalVisible: false
+      showPage: 1,//导航栏标志位
+      isShow: true, //notelist是否显示
+      editItem: {}, //当前操作项
+      showItem: data[0],//editor 展示项
+      data: data, //我的笔记列表
+      data1: data1, //分享列表
+      flag: false, //预览页显示
     };
   }
   toggleCollapsed = () => {
@@ -74,21 +70,41 @@ export default class NavBar extends Component {
       ground: "2",
       my: "3"
     }
-    this.setState({ showPage: changeObj[code], isShow: true, flag: false });
+    if (code == 'note') {
+      this.setState({
+        showPage: changeObj[code],
+        showItem: this.state.data[0] ? this.state.data[0] : {},
+        isShow: true,
+        flag: false
+      });
+    }
+    this.setState({
+      showPage: changeObj[code],
+      isShow: true,
+      flag: false
+    });
   }
   previewStatus = (currentItem) => {
-    // console.log(editItem);
     let editItem = currentItem.item;
     if (editItem.preview) {
       this.preview.current.innerHTML = editItem.content;
     }
     if (editItem._status == "edit") {
-      this.setState({ editItem, showItem: editItem, isShow: editItem.flag, flag: editItem.preview }, () => {
+      this.setState({
+        editItem,
+        showItem: editItem,
+        isShow: editItem.flag,
+        flag: editItem.preview
+      }, () => {
         console.log(this.state)
       })
       return;
     }
-    this.setState({ editItem, isShow: editItem.flag, flag: editItem.preview }, () => {
+    this.setState({
+      editItem,
+      isShow: editItem.flag,
+      flag: editItem.preview
+    }, () => {
       console.log(this.state)
     })
   }
@@ -108,16 +124,32 @@ export default class NavBar extends Component {
           return o.id != editItem.id;
         })
         if (editItem.id == this.state.showItem.id && newList.length != 0) {
-          this.setState({ data: newList, editItem, showItem: newList[0] })
+          this.setState({
+            data: newList,
+            editItem,
+            showItem: newList[0]
+          })
         } else {
-          this.setState({ data: newList, editItem, showItem: { id: null, description: null, content: null, title: null } });
+          this.setState({
+            data: newList,
+            editItem,
+            showItem: {
+              id: null,
+              description: null,
+              content: null,
+              title: null
+            }
+          });
         }
       }
     });
   }
 
   addItem = () => {
-
+    this.setState({
+      isShow: false,
+      showItem: {}
+    })
   }
 
   render() {
@@ -149,14 +181,14 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1 && this.state.isShow
               ? <div className="noteList">
-                <Button type="primary" shape="round" onClick={() => { this.setState({ isShow: false }) }}>新建</Button>
+                <Button type="primary" shape="round" onClick={() => { this.addItem() }}>新建</Button>
                 {/* <Button type="default">新增</Button> */}
                 <NoteList preview={this.previewStatus} data={this.state.data} delItem={this.delItem} />
               </div>
               : null
           }
           {
-            this.state.showPage == 1
+            this.state.showPage == 1 && this.state.data.length
               ? <div className="editor">
                 <Editor editItem={this.state.showItem} />
               </div>
@@ -169,11 +201,10 @@ export default class NavBar extends Component {
               </div>
               : null
           }
-          {
-            <div className="editorPreview" ref={this.preview} style={!this.state.flag ? { display: "none" } : { display: "block" }}>
-
-            </div>
-          }
+          <div className="editorPreview"
+            ref={this.preview}
+            style={!this.state.flag ? { display: "none" } : { display: "block" }}
+          ></div>
         </div>
       </div>
     );

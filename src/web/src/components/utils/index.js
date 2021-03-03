@@ -1,4 +1,5 @@
-import { message } from 'antd'
+/* eslint-disable */
+// import { message } from 'antd'
 /**
  * 
  * @param {string}gphoneInput 
@@ -41,19 +42,8 @@ function isPhoneOrEmail(userInput) {
   
   if (flag) {//手机号
     return true;
-    if (!isPhoneAvailable(userInput)) {
-      message.info('请输入正确的手机号');
-      return 0;
-    } else {
-      return true;
-    }
   } else {//邮箱
     return false;
-    if (!isEmailAvailable(userInput)) {
-      message.info('请输入正确邮箱')
-    } else {
-      return false;
-    }
   }
 }
 // 1、密码必须由数字、字符、特殊字符三种中的两种组成;

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { Input, Button, Tooltip, message } from 'antd';
 import utils from '../utils'
-import { UserOutlined, UnlockOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
 import './login.css';
 
 export default class Login extends Component {
@@ -190,7 +190,7 @@ export default class Login extends Component {
               trigger={['focus']}
               title={`1、密码必须由数字、字符、特殊字符三种中的两种组成;
               2、密码长度不能少于8个字符;`}
-              placement="topLeft"
+              placement="right"
               overlayClassName="numeric-input"
             >
               <Input.Password className="password"
