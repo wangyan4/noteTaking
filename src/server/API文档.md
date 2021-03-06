@@ -16,10 +16,10 @@
 
 ```json
 const post ={
-            username:'hello',
-            phone:'15230801658',
-            email:'1417037714@qq.com',
-            passwd:'666'
+            "username":"hello",
+            "phone":"15230801658",
+            "email":"1417037714@qq.com",
+            "passwd":"123"
 };
 ```
 
@@ -27,7 +27,7 @@ const post ={
 
 ```json
 {
-    status:'register success'
+    "status":"register success"
 }
 ```
 
@@ -41,10 +41,10 @@ const post ={
 
 ```json
 const post ={
-            username:'hello',
-            phone:'15230801658',
-            email:'1417037714@qq.com',
-            passwd:'666'
+            "username":"hello",
+            "phone":"15230801658",
+            "email":"1417037714@qq.com",
+            "passwd":"123"
 };
 ```
 
@@ -53,11 +53,11 @@ const post ={
 ```json
 //登录成功
 {
-    status:'login success'
+    "status":"login success"
 }
 //登录失败
 {
-    status:'login fail'
+    "status":"login fail"
 }
 ```
 
@@ -82,7 +82,7 @@ fetch(`http://xpmxia.cn.utools.club/headimg/1`,{
 
 ```json
 {
-    status:'update success'
+    "status":"update success"
 }
 ```
 
@@ -98,7 +98,7 @@ fetch(`http://xpmxia.cn.utools.club/headimg/1`,{
 this.setState({
     imgsrc:`http://xpmxia.cn.utools.club/gethead/1`
 }); 
-<img src={`${imgsrc}`} />
+`<img src={`${imgsrc}`} />`
 ```
 
 ### 5. 创建新笔记仓库
@@ -111,13 +111,13 @@ this.setState({
 
 ```json
 const post = {
-            uid:1,
-            username:'hh',
-            title:'aa',
-            description:'bb',
-            content:'cc',
-            time:'dd',
-            ispub:true
+            "uid":"1",
+            "username":"hh",
+            "title":"aa",
+            "description":"bb",
+            "content":"cc",
+            "time":"dd",
+            "ispub":true
 }
 ```
 
@@ -125,7 +125,7 @@ const post = {
 
 ```json
 {
-    status:'create success'
+    "status":"create success"
 }
 ```
 
@@ -139,7 +139,7 @@ const post = {
 
 ```json
 {
-    status:'update success'
+    "status":"update success"
 }
 ```
 
@@ -206,7 +206,7 @@ const post = {
 
 ```json
 {
-    status:'delete success'
+    "status":"delete success"
 }
 ```
 
@@ -220,9 +220,9 @@ const post = {
 
 ```json
 const post = {
-            nid:1, //需要克隆的笔记仓库id
-            uid:1, //克隆他人笔记的用户的id
-			username:'hello' //uid的用户名
+            "nid":"1", "需要克隆的笔记仓库id"
+            "uid":"1", "克隆他人笔记的用户的id"
+			"username":"hello" "uid的用户名"
 }
 ```
 
@@ -230,7 +230,7 @@ const post = {
 
 ```json
 {
-    status:'clone success'
+    "status":"clone success"
 }
 ```
 
@@ -244,9 +244,9 @@ const post = {
 
 ```json
 const post = {
-            title:'标题1', //该笔记仓库名
-            uid:1, //克隆该笔记的用户id，授权后有权更新原仓库
-			bid:2  //该笔记仓库创建用户id
+            "title":", "该笔记仓库名"
+            "uid":"1", "克隆该笔记的用户id，授权后有权更新原仓库"
+			"bid":"2"  ；"该笔记仓库创建用户id"
 }
 ```
 
@@ -254,7 +254,7 @@ const post = {
 
 ```json
 {
-    status:'agree success'
+    "status":"agree success"
 }
 ```
 
@@ -268,9 +268,9 @@ const post = {
 
 ```json
 const post = {
-            title:'标题1', //该笔记仓库名
-            uid:1, //克隆该笔记的用户id，取消授权后该用户不可更新原创仓库
-			bid:2  //该笔记仓库创建用户id
+            "title":"标题1", "该笔记仓库名"
+            "uid":"1", "克隆该笔记的用户id，取消授权后该用户不可更新原创仓库"
+			"bid":"2"  "该笔记仓库创建用户id"
 }
 ```
 
@@ -278,7 +278,7 @@ const post = {
 
 ```json
 {
-    status:'refuse success'
+    "status":"refuse success"
 }
 ```
 
@@ -292,8 +292,8 @@ const post = {
 
 ```json
 {
-    status:0,
-    data:[{
+    "status":"0",
+    "data":[{
 		"uid":1,
 		"username":"hello",
 		"authority":false
@@ -317,11 +317,11 @@ const post = {
 ```json
 //授权用户
 {
-    status:'push success'
+    "status":"push success"
 }
 //非授权用户
 {
-    status:'no authority,push fail!'
+    "status":"no authority,push fail!"
 }
 ```
 
@@ -335,8 +335,8 @@ const post = {
 
 ```json
 {
-    status:0,
-    data:[{
+    "status":"0",
+    "data":[{
 		"id":1, //笔记id
 		"uid":1, //该笔记仓库用户
 		"username":"hello",
@@ -359,8 +359,8 @@ const post = {
 
 ```json
 {
-    status:0,
-    data:[{		
+    "status":"0",
+    "data":[{		
 		"id":1, 
 		"username":"hello",
 		"passwd":"123",
