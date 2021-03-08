@@ -52,6 +52,7 @@ export default class NoteList extends Component {
     return (
       <div>
         {
+          // 分享广场
           this.props.isPersonal
             ? <List
               itemLayout="horizontal"
@@ -65,7 +66,11 @@ export default class NoteList extends Component {
                 >
                   <List.Item.Meta
                     avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+<<<<<<< HEAD
                     title={<a onClick={() => { this.previewList(item, true) }}>{item.title}</a>}
+=======
+                    title={<a onClick={() => { this.editList(item, true) }}>{item.title}</a>}
+>>>>>>> 8ba65a725a51e79b3dd21b81d90702825244b9d0
                     description={item.description}
                   />
                 </List.Item>
