@@ -71,7 +71,7 @@ export default class Editor extends React.Component {
 		})
 	}
 
-	submitContent = async () => {
+	submitContent = async (isMenu) => {
 		// 在编辑器获得焦点时按下ctrl+s会执行此方法
 		// 编辑器内容提交到服务端之前，可直接调用editorState.toHTML()来获取HTML格式的内容
 		message.success('保存成功！', 2)
@@ -81,6 +81,9 @@ export default class Editor extends React.Component {
 			? message.info('edit',2)
 			:message.info('add',2)
 		// const result = await saveEditorContent(htmlContent)
+		if(isMenu){
+			this.props.save(true)
+		}
 	}
 
 
@@ -164,7 +167,7 @@ export default class Editor extends React.Component {
 				key: 'custom-button',
 				type: 'button',
 				text: '保存',
-				onClick: this.submitContent
+				onClick: this.submitContent.bind(this,true)
 			}
 		]
 		return (
@@ -173,7 +176,7 @@ export default class Editor extends React.Component {
 					placeholder="请输入正文内容"
 					value={editorState}
 					onChange={this.handleEditorChange}
-					onSave={this.submitContent}
+					onSave={this.submitContent.bind(this,false)}
 					extendControls={extendControls}
 					// media={{ uploadFn: this.myUploadFn }}
 				/>

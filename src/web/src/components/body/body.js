@@ -46,7 +46,7 @@ const data1 = [
 export default class NavBar extends Component {
   constructor() {
     super();
-    this.preview = createRef();
+    this.previewDom = createRef();
     this.state = {
       collapsed: false,
       showPage: 1,//导航栏标志位
@@ -84,10 +84,10 @@ export default class NavBar extends Component {
       flag: false
     });
   }
-  previewStatus = (currentItem) => {
+  preview = (currentItem) => {
     let editItem = currentItem.item;
     if (editItem.preview) {
-      this.preview.current.innerHTML = editItem.content;
+      this.previewDom.current.innerHTML = editItem.content;
     }
     if (editItem._status == "edit") {
       this.setState({
@@ -152,6 +152,12 @@ export default class NavBar extends Component {
     })
   }
 
+  onSave =(isShow)=>{
+    this.setState({
+      isShow:isShow
+    })
+  }
+
   render() {
     return (
       <div className="bodyContent" >
@@ -183,26 +189,26 @@ export default class NavBar extends Component {
               ? <div className="noteList">
                 <Button type="primary" shape="round" onClick={() => { this.addItem() }}>新建</Button>
                 {/* <Button type="default">新增</Button> */}
-                <NoteList preview={this.previewStatus} data={this.state.data} delItem={this.delItem} />
+                <NoteList preview={this.preview} data={this.state.data} delItem={this.delItem} />
               </div>
               : null
           }
           {
-            this.state.showPage == 1 && this.state.data.length
+            this.state.showPage == 1
               ? <div className="editor">
-                <Editor editItem={this.state.showItem} />
+                <Editor editItem={this.state.showItem} save={this.onSave}/>
               </div>
               : null
           }
           {
             this.state.showPage == 2
               ? <div className="noteList">
-                <NoteList preview={this.previewStatus} isPersonal data={this.state.data1} delItem={this.delItem} />
+                <NoteList preview={this.preview} isPersonal data={this.state.data1} delItem={this.delItem} />
               </div>
               : null
           }
           <div className="editorPreview"
-            ref={this.preview}
+            ref={this.previewDom}
             style={!this.state.flag ? { display: "none" } : { display: "block" }}
           ></div>
         </div>
