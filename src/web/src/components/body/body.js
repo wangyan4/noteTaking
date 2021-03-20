@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { Menu, Button, Modal } from 'antd';
+import { Menu, Button, Modal, Empty } from 'antd';
 import _ from 'loadsh';
 import {
   MenuUnfoldOutlined,
@@ -196,7 +196,14 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1
               ? <div className="editor">
-                <Editor editItem={this.state.showItem} save={this.onSave}/>
+                {this.state.data.length && !this.state.isShow
+                ?<Editor editItem={this.state.showItem} save={this.onSave}/>
+                :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                }
+                {/* {!this.state.isShow
+                ?<Editor editItem={this.state.showItem} save={this.onSave}/>
+                :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                } */}
               </div>
               : null
           }

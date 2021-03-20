@@ -6,7 +6,8 @@ import { List, Avatar, message, Modal } from 'antd';
 // }
 export default class NoteList extends Component {
   state = {
-    listData: []
+    listData: [],
+    isHorizontal:true
   }
   // 在getDerivedStateFromProps中进行state的改变
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -31,7 +32,10 @@ export default class NoteList extends Component {
   previewList = (item, flag) => {
     item.preview = flag;
     item._status = "preview";
-    this.props.preview({ item })
+    this.props.preview({ item });
+    this.setState({
+      isHorizontal:false
+    })
   }
 
   gitClone = (item, flag) => {
@@ -55,22 +59,18 @@ export default class NoteList extends Component {
           // 分享广场
           this.props.isPersonal
             ? <List
-              itemLayout="horizontal"
+              itemLayout={this.state.isHorizontal?"horizontal":"vertical"}
               dataSource={listData}
               renderItem={item => (
                 <List.Item
+                  style={{marginLeft:50}}
                   actions={[
                     <a key="list-loadmore-edit" onClick={() => { this.previewList(item, true) }}>预览</a>,
                     <a style={{ marginRight: 30 }} key="list-loadmore-clone" onClick={() => { this.gitClone(item, false) }}>克隆</a>
                   ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
-<<<<<<< HEAD
                     title={<a onClick={() => { this.previewList(item, true) }}>{item.title}</a>}
-=======
-                    title={<a onClick={() => { this.editList(item, true) }}>{item.title}</a>}
->>>>>>> 8ba65a725a51e79b3dd21b81d90702825244b9d0
                     description={item.description}
                   />
                 </List.Item>
@@ -81,10 +81,14 @@ export default class NoteList extends Component {
               dataSource={listData}
               renderItem={item => (
                 <List.Item
-                  actions={[<a style={{ marginLeft: 50 }} key="list-loadmore-edit" onClick={() => { this.editList(item, false) }}>编辑</a>, <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>]}
+                  style={{marginLeft:50}}
+                  actions={[<a key="list-loadmore-delete" onClick={() => {  }}>分享</a>, 
+                  <a  key="list-loadmore-edit" onClick={() => { this.editList(item, false) }}>编辑</a>, 
+                  <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
+                  
+                ]}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
                     title={<a onClick={() => { this.editList(item, true) }}>{item.title}</a>}
                     description={item.description}
                   />

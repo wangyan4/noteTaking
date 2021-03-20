@@ -8,12 +8,12 @@ import './editor.css'
 import { message } from 'antd';
 
 let titleStr = "", descriptionStr = "";
-// const defaultStr = `
-//     <p></p>
-//     <p class="title">标题:${titleStr}</p><br>
-//     <p class="description">描述:${descriptionStr}</p><br><hr>
-// `;
-const defaultStr = "";
+const defaultStr = `
+    <p></p>
+    <p class="title">标题:${titleStr}</p><br>
+    <p class="description">描述:${descriptionStr}</p><br><hr>
+`;
+// const defaultStr = "";
 export default class Editor extends React.Component {
 
 	state = {
