@@ -6,9 +6,9 @@
 
 ## 接口尚在测试阶段...
 
-### 1. 用户注册
+### 1. 用户注册（已测，OK）
 
-**必选参数：username,passwd,email,phone**
+**必选参数：em_ph,passwd**
 
 **接口地址：post，/register**
 
@@ -16,24 +16,29 @@
 
 ```json
 const post ={
-            "username":"hello",
-            "phone":"15230801658",
-            "email":"1417037714@qq.com",
+            "em_ph":"15230801658",
             "passwd":"123"
 };
 ```
-
 **返回数据：**
 
 ```json
+//注册成功
 {
-    "status":"register success"
+    "success":true,
+	"message":"register success"
+}
+//注册失败
+{
+    "success":false,
+	"message":"手机号/邮箱已注册！"
 }
 ```
 
-### 2. 用户登录
 
-**必选参数：loginid,passwd**
+### 2. 用户登录（已测，OK）
+
+**必选参数：em_ph,passwd**
 
 **接口地址：post，/login**
 
@@ -41,9 +46,7 @@ const post ={
 
 ```json
 const post ={
-            "username":"hello",
-            "phone":"15230801658",
-            "email":"1417037714@qq.com",
+            "em_ph":"15230801658",
             "passwd":"123"
 };
 ```
@@ -53,97 +56,73 @@ const post ={
 ```json
 //登录成功
 {
-    "status":"login success"
+    "success":true,
+	"message":"login success"
 }
-//登录失败
+//登录失败(手机号/邮箱/密码错误)
 {
-    "status":"login fail"
+    "success":false,
+	"message":"login fail"
 }
 ```
 
-### 3. 用户更新头像
+### 3. 媒体文件上传（图片，音频，视频）（已测，OK）
 
 **必选参数：**
 
-**接口地址：post，/headimg/:id（用户id）** 
-
-**请求示例：**
-
-```json
-var formData = new FormData();
-formData.append('image', f);
-fetch(`http://xpmxia.cn.utools.club/headimg/1`,{
-    method:"POST",
-    body:formData  
-})
-```
-
-**返回数据：**
-
-```json
-{
-    "status":"update success"
-}
-```
-
-### 4. 获取用户头像
-
-**必选参数：**
-
-**接口地址：get，/gethead/:id（用户id）**：
-
-**请求示例：**
-
-```json
-this.setState({
-    imgsrc:`http://xpmxia.cn.utools.club/gethead/1`
-}); 
-`<img src={`${imgsrc}`} />`
-```
-
-### 5. 创建新笔记仓库
-
-**必选参数：uid,username,title,description,content,time,ispub（是否开源）**
-
-**接口地址：post，/notecreate**：
+**接口地址：post，/mediaUpload**
 
 **请求数据：**
 
 ```json
-const post = {
-            "uid":"1",
-            "username":"hh",
-            "title":"aa",
-            "description":"bb",
-            "content":"cc",
-            "time":"dd",
-            "ispub":true
-}
+const fd = new FormData();
+fd.append('file', param.file);
 ```
 
 **返回数据：**
 
 ```json
 {
-    "status":"create success"
+    "success":true,
+	"data":"http://192.168.88.144:8002/getmediafile/1618479214325.jpeg"
 }
+{
+    "success":true,
+	"data":"http://xpmxia.cn.utools.club/getmediafile/1618479214325.jpeg"
+}
+
 ```
 
-### 6. 修改笔记（非克隆）
+### 4. 编辑修改，保存笔记 （已测，OK）
 
-**必选参数：id（笔记仓库id）,content,time**
+**必选参数：id（笔记仓库id）,content（HTML格式笔记内容）**
 
 **接口地址：post，/updatenote**
 
+**请求数据：**
+
+```json
+const post ={
+    "id":"1",
+    "content":'<p>你好，李焕英</p>
+	<p></p>
+	<div class="media-wrap image-wrap">
+	<img autoplay="" controls="" poster="" src="http://192.168.88.144:8002/getmediafile/1618496098764.jpeg"/>
+	</div>
+	<p>我的笔记，这是一段描述</p>'
+};
+```
+
 **返回数据：**
 
 ```json
 {
-    "status":"update success"
+    "success":true,
+    "message":"save success"
 }
 ```
 
-### 7. 获取某个笔记仓库详细信息
+### 5. 获取某笔记详细内容（已测，OK）
 
 **必选参数：**
 
@@ -153,17 +132,89 @@ const post = {
 
 ```json
 {
-	"status":0,
+	"success":true,
 	"data":[{
+		"id":1,
+		"uid":"1",
+		"username":"hh",
 		"title":"aa",
 		"description":"bb",
-		"content":"cc",
-		"time":"dd"
+		"content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>","time":"2021-4-15 10:53:44 PM",
+		"ispub":true,
+		"bid":"1",
+		"buser":"hh",
+		"authority":true
 	}]
 }
 ```
 
-### 8. 获取某用户所有笔记仓库（含克隆）
+### 6. 广场知识分享-获取所有开源笔记列表（已测，OK）
+
+**必选参数：**
+
+**接口地址：get，/share** 
+
+**返回数据：**
+
+```json
+{
+	"success":true,
+	"data":[
+		{
+			"id":1,
+			"uid":"1",
+			"username":"hh",
+			"title":"aa",
+			"description":"bb",
+			"content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>",
+			"time":"2021-4-15 10:53:44 PM",
+			"bid":"1",
+			"buser":"hh"
+		},
+		{
+			"id":2,
+			"uid":"1",
+			"username":"hh",
+			"title":"aa",
+			"description":"bb",
+			"content":"cc",
+			"time":"dd",
+			"bid":"1",
+			"buser":"hh"
+		}
+	]
+}
+```
+
+### 7. 新建笔记仓库 
+
+**必选参数：uid,username,title,description,content,ispub（是否开源）**
+
+**接口地址：post，/notecreate**：
+
+**请求数据：**
+
+```json
+const post = {
+    "uid":"1",
+    "username":"xiapeimin",
+    "title":"笔记标题",
+    "description":"这是笔记描述",
+    "content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>",
+    "ispub":true
+}
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+	"message":"create success"
+}
+```
+
+### 8. 获取某用户所有笔记仓库（含克隆）（已测，OK）
 
 **必选参数：**
 
@@ -173,28 +224,41 @@ const post = {
 
 ```json
 {
-	"status":0,
-	"data":[{
-		"uid":1,
-		"title":"aa",
-		"description":"bb",
-		"content":"cc",
-		"time":"dd",
-		"ispub":true,
-		"bid":1
-	},
-	{
-		"uid":1,
-		"title":"aa",
-		"description":"bb",
-		"content":"cc",
-		"time":"dd",
-		"ispub":false,
-		"bid":2  //原仓库用户id
-	}]
+	"success":true,
+	"data":[
+		{
+			"id":2,
+			"uid":"1",
+			"username":"hh",
+			"title":"aa",
+			"description":"bb",
+			"content":"cc",
+			"time":"dd",
+			"ispub":true,
+			"bid":"1",
+			"buser":"hh",
+			"authority":true
+		},
+		{
+			"id":1,
+			"uid":"1",
+			"username":"hh",
+			"title":"aa",
+			"description":"bb",
+			"content":"<p>hhh</p>",
+			"time":"2021-4-16 3:35:54 PM",
+			"ispub":true,
+			"bid":"1",
+			"buser":"hh",
+			"authority":true
+		}
+	]
 }
 
 ```
+
+
+
 
 ### 9. 删除笔记仓库
 
@@ -206,7 +270,8 @@ const post = {
 
 ```json
 {
-    "status":"delete success"
+    "success":true,
+	"message":"delete success"
 }
 ```
 
@@ -220,9 +285,9 @@ const post = {
 
 ```json
 const post = {
-            "nid":"1", "需要克隆的笔记仓库id"
-            "uid":"1", "克隆他人笔记的用户的id"
-			"username":"hello" "uid的用户名"
+    "nid":"1", "需要克隆的笔记仓库id"
+    "uid":"1", "克隆他人笔记的用户的id"
+	"username":"hello" "uid的用户名"
 }
 ```
 
@@ -230,7 +295,8 @@ const post = {
 
 ```json
 {
-    "status":"clone success"
+    "success":true,
+	"message":"clone success"
 }
 ```
 
@@ -244,9 +310,9 @@ const post = {
 
 ```json
 const post = {
-            "title":", "该笔记仓库名"
-            "uid":"1", "克隆该笔记的用户id，授权后有权更新原仓库"
-			"bid":"2"  ；"该笔记仓库创建用户id"
+    "title":"笔记标题","该笔记仓库名"
+    "uid":"1", "克隆该笔记的用户id，授权后有权更新原仓库"
+	"bid":"2" "该笔记仓库创建用户id"
 }
 ```
 
@@ -254,7 +320,8 @@ const post = {
 
 ```json
 {
-    "status":"agree success"
+    "success":true,
+	"message":"agree success"
 }
 ```
 
@@ -268,9 +335,9 @@ const post = {
 
 ```json
 const post = {
-            "title":"标题1", "该笔记仓库名"
-            "uid":"1", "克隆该笔记的用户id，取消授权后该用户不可更新原创仓库"
-			"bid":"2"  "该笔记仓库创建用户id"
+    "title":"标题1", "该笔记仓库名"
+    "uid":"1", "克隆该笔记的用户id，取消授权后该用户不可更新原创仓库"
+	"bid":"2"  "该笔记仓库创建用户id"
 }
 ```
 
@@ -278,7 +345,8 @@ const post = {
 
 ```json
 {
-    "status":"refuse success"
+    "success":true,
+	"message":"refuse success"
 }
 ```
 
@@ -292,7 +360,7 @@ const post = {
 
 ```json
 {
-    "status":"0",
+    "success":true,
     "data":[{
 		"uid":1,
 		"username":"hello",
@@ -317,39 +385,18 @@ const post = {
 ```json
 //授权用户
 {
-    "status":"push success"
+    "success":true,
+	"message":"push success"
 }
 //非授权用户
 {
-    "status":"no authority,push fail!"
+    "success":true,
+	"message":"no authority,push fail!"
 }
 ```
 
-### 15. 广场知识分享-获取所有开源笔记仓库
 
-**必选参数：**
-
-**接口地址：get，/share** 
-
-**返回数据：**
-
-```json
-{
-    "status":"0",
-    "data":[{
-		"id":1, //笔记id
-		"uid":1, //该笔记仓库用户
-		"username":"hello",
-		"title":"标题1",
-		"description":"hhh",
-		"content":"ttt",
-		"time":"12:00",
-		"bid":1,  //该仓库原创用户id，bid==uid为非克隆仓库，bid!=uid为uid克隆bid的笔记
-		"buser":"hello"  //原创用户名
-	}]
-}
-```
-### 16. 获取所有用户列表
+### 15. 获取所有用户列表
 
 **必选参数：**
 
@@ -359,7 +406,7 @@ const post = {
 
 ```json
 {
-    "status":"0",
+    "success":true,
     "data":[{		
 		"id":1, 
 		"username":"hello",
@@ -377,7 +424,41 @@ const post = {
 }
 ```
 
-### 16. 获取图片测试
+### 16. 用户更新头像
+
+**必选参数：**
+
+**接口地址：post，/headimg/:id（用户id）** 
+
+**请求示例：**
+
+```json
+
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+	"message":"update success"
+}
+```
+
+### 17. 获取用户头像
+
+**必选参数：**
+
+**接口地址：get，/gethead/:id（用户id）**：
+
+**请求示例：**
+
+```json
+`http://xpmxia.cn.utools.club/gethead/1` 
+```
+
+
+### 18. 获取图片测试
 
 **必选参数：**
 
@@ -385,7 +466,7 @@ const post = {
 
 **返回数据：**
 
-### 17. 获取音频测试
+### 19. 获取音频测试
 
 **必选参数：**
 
@@ -393,7 +474,7 @@ const post = {
 
 **返回数据：**
 
-### 18. 获取视频测试
+### 20. 获取视频测试
 
 **必选参数：**
 
@@ -401,7 +482,7 @@ const post = {
 
 **返回数据：**
 
-### 19. 上传图片测试
+### 21. 上传图片测试
 
 **必选参数：**
 
@@ -409,7 +490,7 @@ const post = {
 
 **返回数据：**
 
-### 20. 上传录音测试
+### 22. 上传录音测试
 
 **必选参数：formData**：`formData.append('audiofile', e);`
 
@@ -417,7 +498,7 @@ const post = {
 
 **返回数据：**
 
-### 21. 上传视频测试
+### 23. 上传视频测试
 
 **必选参数：formData**：`formData.append('videofile', e);`
 

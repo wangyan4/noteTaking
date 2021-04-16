@@ -14,7 +14,7 @@ router.get('/share', async (req,res) => {
     }
     let obj = {
         status:0,
-        data:data
+        data:figure
     }
     console.log(obj);
     res.send(obj);

@@ -4,10 +4,11 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var fs = require('fs');
 
 var multer = require('multer');
 var query = require('./routes/pg');
-var rnum = require('../random');
+var rnum = require('./routes/random');
 var indexRouter = require('./routes/index');
 //var register_user = require('./routes/users/register');
 var search_user = require('./routes/users/search');
@@ -17,40 +18,101 @@ var audio_up = require('./routes/audio_test/audio');
 var audio_get = require('./routes/audio_test/getaudio');
 var video_up = require('./routes/video_test/video');
 var video_get = require('./routes/video_test/getvideo');
+
+var media_up = require('./routes/media/media');
+var media_get = require('./routes/media/getmedia');
+
 // var note_content = require('./routes/notes/getnote');
 var mynote = require('./routes/notes/usernote');
 var share = require('./routes/notes/sharelist');
 
 var app = express();
 
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.header("X-Powered-By",' 3.2.1')
+  res.header("Content-Type", "application/json;charset=utf-8");
+  next();
+});
+
 //数据测试
-/**注册 */
+/**注册 ok*/
 app.post('/register',(req,res)=>{
   var str = '';
-  var username,passwd,email,phone;
+  var flag = false;
+  var em_ph,passwd,obj;
   req.on('data',function(data){
     str += data;
     console.log(str);
   });            
   req.on("end",async ()=> {
     var json = JSON.parse(str);
-    username = json.username;
+    em_ph = json.em_ph;
     passwd = json.passwd;
-    email = json.email;
-    phone = json.phone;
-    var figure = await query('SELECT id FROM userlist',[]);
-    var id = figure.length+1;
-    var obj = await query('INSERT INTO userlist(id,username,passwd,email,phone) VALUES ($1,$2,$3,$4,$5)',[id,username,passwd,email,phone]);
-    obj = {
-      status:'register success'
+    
+    var figure = await query('SELECT em_ph FROM userlist',[]);
+    for(var i=0;i<figure.length;i++){
+      if(em_ph==figure[i].em_ph){
+        obj={
+          success:false,
+          message:'手机号/邮箱已注册！'
+        }
+        flag=true;
+        i=figure.length;
+      }
+    }
+    if(!flag){
+      var id = figure.length+1;
+      var object = await query('INSERT INTO userlist(id,username,passwd,em_ph) VALUES ($1,$2,$3,$4)',[id,em_ph,passwd,em_ph]);
+      obj = {
+        success:true,
+        message:'register success'
+      }
     }
     res.send(obj);
   });
 });
-/**创建新笔记仓库 */
+/**用户登录 ok*/
+app.post('/login',(req,res)=>{
+  var str = '';
+  var em_ph,passwd,obj;
+  var flag = false;
+  req.on('data',function(data){
+    str += data;
+    console.log(str);
+  });            
+  req.on("end",async ()=> {
+    var json = JSON.parse(str);
+    em_ph = json.em_ph;
+    passwd = json.passwd;
+    var figure = await query('SELECT passwd,em_ph FROM userlist',[]);
+    for(var i=0;i<figure.length;i++){
+      if(figure[i].em_ph == em_ph && figure[i].passwd == passwd){
+        obj={
+          success:true,
+          message:'login success'
+        }
+        i = figure.length;
+        flag = true;
+      }
+    }
+    if(!flag){
+      obj={
+        success:false,
+        message:'login fail'
+      }
+    }
+    res.send(obj);
+  });
+});
+/**新建笔记仓库 */
 app.post('/notecreate',(req,res)=>{
   var str = '';
   var uid,username,title,description,content,time,ispub,authority;
+  var myDate = new Date();
+  time = myDate.toLocaleString( );        //获取日期与时间
   authority=true;
   req.on('data',function(data){
     str += data;
@@ -63,73 +125,48 @@ app.post('/notecreate',(req,res)=>{
     title = json.title;
     description = json.description;
     content = json.content;
-    time = json.time;
+    //time = json.time;
     ispub = json.ispub;
     var figure = await query('SELECT id FROM note',[]);
     var nid = figure[figure.length-1].id+1;
     var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,bid,buser,authority) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[nid,uid,username,title,description,content,time,ispub,uid,username,authority]);
     obj = {
-      status:'create success'
+      success:true,
+      message:'create success'
     }
     res.send(obj);  
   });
 });
-/**获取某个笔记详细信息 */
+/**获取某个笔记详细信息 ok*/
 app.get('/getnote/:id', async (req, res)=> {
   var id = req.params.id;
-  var figure = await query('SELECT title,description,content,time FROM note where id=$1',[id]);
+  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority FROM note where id=$1',[id]);
   let obj = {
-    status:0,
+    success:true,
     data:figure
   }
   console.log(obj);
   res.send(obj);
 });
-/**获取某用户所有笔记仓库 */ //test
+/**获取某用户所有笔记仓库 */ 
 app.get('/allnotes/:id', async (req, res)=> {
   var id = req.params.id;
-  var figure = await query('SELECT uid,title,description,content,time,ispub,bid FROM note where uid=$1',[id]);
+  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority FROM note where uid=$1',[id]);
   let obj = {
-    status:0,
+    success:true,
     data:figure
   }
   console.log(obj);
   res.send(obj);
 });
-/**用户登录 */
-app.post('/login',(req,res)=>{
-  var str = '';
-  var loginid,passwd;
-  var flag = false;
-  req.on('data',function(data){
-    str += data;
-    console.log(str);
-  });            
-  req.on("end",async ()=> {
-    var json = JSON.parse(str);
-    loginid = json.loginid;
-    passwd = json.passwd;
-    var figure = await query('SELECT passwd,email,phone FROM userlist',[]);
-    for(var i=0;i<figure.length;i++){
-      if((figure[i].phone == loginid || figure[i].email == loginid) && figure[i].passwd == passwd){
-        res.send({
-          status:'login success'
-        });
-        i = figure.length;
-        flag = true;
-      }
-    }
-    if(!flag){
-      res.send({
-        status:'login fail'
-      });
-    }
-  });
-});
-/**修改笔记仓库内容 */
+
+/**修改笔记仓库内容 保存笔记 ok*/
 app.post('/updatenote',(req,res)=>{
   var str = '';
   var id,content,time;
+  var myDate = new Date();
+  time = myDate.toLocaleString( );        //获取日期与时间
+  console.log('当前时间',time);
   req.on('data',function(data){
     str += data;
     console.log(str);
@@ -138,17 +175,18 @@ app.post('/updatenote',(req,res)=>{
     var json = JSON.parse(str);
     id = json.id;
     content = json.content;
-    time = json.time;
+    //time = json.time;
     var obj = await query('UPDATE note SET content=$1,time=$2 WHERE id=$3',[content,time,id]);
     obj = {
-      status:'update success'
+      success:true,
+      message:'save success'
     }
     res.send(obj);  
   });
 });
 /**用户更新头像 */
 var upload = multer({dest:'uploads/'});
-router.post('/headimg/:id',upload.single('image'),(req,res) => {
+app.post('/headimg/:id',upload.single('image'),(req,res) => {
   var id = req.params.id;
   fs.readFile(req.file.path,async (err,data)=>{
       if(err){return res.send('上传失败')} 
@@ -166,7 +204,8 @@ router.post('/headimg/:id',upload.single('image'),(req,res) => {
       var userimg = 'userimg/'+keepname;     
       var obj = await query('UPDATE userlist SET headimg=$1 WHERE id=$2',[userimg,id]);
       res.send({
-        status:'update success'
+        success:true,
+        message:'update success'
       });     
   });
 });
@@ -189,13 +228,19 @@ app.get('/gethead/:id',async (req,res) => {
     });
   }
 });
-/**删除某个笔记仓库 */
+/**
+ * 删除某个笔记仓库
+ * bug:创建，删除时笔记的id会造成插入异常
+ * 
+ *  */
 app.delete('/delnote/:id',async (req,res) => {
   var id = req.params.id;
-  var obj = await query('DELETE FROM notes where id=$1',[id])
-  res.send({
-    status:'delete success'
-  });
+  var obj = await query('DELETE FROM notes where id=$1',[id]);
+  obj = {
+    success:true,
+    message:'delete success'
+  };
+  res.send(obj);
 });
 /**克隆他人开源笔记仓库 */
 app.post('/clone',async (req,res) => {
@@ -223,7 +268,8 @@ app.post('/clone',async (req,res) => {
     var num = figure2[figure2.length-1].id+1;
     var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,bid,buser,authority) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[num,uid,username,title,description,content,time,ispub,bid,buser,authority]);
     obj = {
-      status:'clone success'
+      success:true,
+      message:'clone success'
     };
     res.send(obj);
   });
@@ -243,7 +289,8 @@ app.post('/agree',async (req,res) => {
     bid = json.bid;
     var obj = await query('UPDATE note SET authority=$1 WHERE uid=$2 and title=$3 and bid=$4',[true,uid,title,bid]);
     obj = {
-      status:'agree success'
+      success:true,
+      message:'agree success'
     };
     res.send(obj);
   });
@@ -263,7 +310,8 @@ app.post('/refuse',async (req,res) => {
     bid = json.bid;
     var obj = await query('UPDATE note SET authority=$1 WHERE uid=$2 and title=$3 and bid=$4',[false,uid,title,bid]);
     obj = {
-      status:'refuse success'
+      success:true,
+      message:'refuse success'
     };
     res.send(obj);
   });
@@ -276,7 +324,7 @@ app.get('/copeuser/:id',async (req,res) => {
   var title = figure[0].title;
   var figure2 = await query('SELECT uid,username,authority FROM note WHERE bid=$1 and title=$2 and uid!=bid',[bid,title,bid]);
   let obj = {
-    status:0,
+    success:true,
     data:figure2
   }
   console.log(obj);
@@ -303,19 +351,53 @@ app.post('/otherudt',async (req,res) => {
       var obj = await query('UPDATE note SET content=$1,time=$2 WHERE bid=$3 and uid=$4 and title=$5',[content,time,bid,bid,title]);
       var obj2 = await query('UPDATE note SET content=$1,time=$2 WHERE id=$3',[content,time,id]);
       obj = {
-        status:'push success'
+        success:true,
+        message:'push success'
       }
       res.send(obj);  
     }else{
       var obj3 = await query('UPDATE note SET content=$1,time=$2 WHERE id=$3',[content,time,id]);
       obj3 = {
-        status:'no authority,push fail!'
+        success:true,
+        message:'no authority,push fail!'
       }
       res.send(obj3);  
     }  
   });
 });
 
+/**
+ * 功能：获取开源仓库列表（分享广场）ok
+ *  */
+app.get('/share',async (req,res) => {
+  var figure = await query('SELECT id,uid,username,title,description,content,time,bid,buser FROM note where ispub=$1',[true]);
+    var data = [];
+    for(var i=0;i<figure.length;i++){
+        if(figure[i].uid == figure[i].bid){
+            data.push(figure[i]);
+        }
+    }
+    let obj = {
+        success:true,
+        data:data
+    }
+    console.log(obj,obj.data.length,'笔记列表长度');
+    res.send(obj);
+});
+/**媒体文件上传 */
+app.get('/getmediafile/:src',async (req,res) => {
+  var src = './routes/media/file/'+req.params.src;
+  var mediasrc = path.join(__dirname,src);
+  fs.readFile(mediasrc,function(err,filedata){
+    if(err){
+      console.log(err);
+      return;
+    }else{
+      res.write(filedata);
+      res.end();
+    }
+  });
+});
 
 
 
@@ -341,7 +423,10 @@ app.use('/audionote',audio_up);
 app.use('/getaudio',audio_get);
 app.use('/video',video_up);
 app.use('/getvideo',video_get);
-app.use('/share',share); //广场知识分享 获取所有原作者笔记仓库
+
+app.use('/mediaUpload',media_up); //媒体文件上传
+//app.use('/getmedia',media_get);
+//app.use('/share',share); //广场知识分享 获取所有原作者笔记仓库
 
 
 
