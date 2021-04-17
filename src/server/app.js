@@ -38,7 +38,10 @@ app.all('*', function(req, res, next) {
 });
 
 //数据测试
-/**注册 ok*/
+
+/**
+ * 注册 ok
+ * */
 app.post('/register',(req,res)=>{
   var str = '';
   var flag = false;
@@ -74,7 +77,9 @@ app.post('/register',(req,res)=>{
     res.send(obj);
   });
 });
-/**用户登录 ok*/
+/**
+ * 用户登录 ok
+ * */
 app.post('/login',(req,res)=>{
   var str = '';
   var em_ph,passwd,obj;
@@ -107,7 +112,9 @@ app.post('/login',(req,res)=>{
     res.send(obj);
   });
 });
-/**新建笔记仓库 */
+/**
+ * 新建笔记仓库 
+ * */
 app.post('/notecreate',(req,res)=>{
   var str = '';
   var uid,username,title,description,content,time,ispub,authority;
@@ -128,7 +135,13 @@ app.post('/notecreate',(req,res)=>{
     //time = json.time;
     ispub = json.ispub;
     var figure = await query('SELECT id FROM note',[]);
-    var nid = figure[figure.length-1].id+1;
+    var arr = [];
+    for(var i=0;i<figure.length;i++){
+      var id = Number(figure[i].id); //转字符为数字
+      arr.push(id);
+    }
+    var max = Math.max.apply(null, arr);
+    var nid = max+1;
     var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,bid,buser,authority) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[nid,uid,username,title,description,content,time,ispub,uid,username,authority]);
     obj = {
       success:true,
@@ -137,7 +150,9 @@ app.post('/notecreate',(req,res)=>{
     res.send(obj);  
   });
 });
-/**获取某个笔记详细信息 ok*/
+/**
+ * 获取某个笔记详细信息 ok
+ * */
 app.get('/getnote/:id', async (req, res)=> {
   var id = req.params.id;
   var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority FROM note where id=$1',[id]);
@@ -148,7 +163,9 @@ app.get('/getnote/:id', async (req, res)=> {
   console.log(obj);
   res.send(obj);
 });
-/**获取某用户所有笔记仓库 */ 
+/**
+ * 获取某用户所有笔记仓库 
+ * */ 
 app.get('/allnotes/:id', async (req, res)=> {
   var id = req.params.id;
   var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority FROM note where uid=$1',[id]);
@@ -160,7 +177,9 @@ app.get('/allnotes/:id', async (req, res)=> {
   res.send(obj);
 });
 
-/**修改笔记仓库内容 保存笔记 ok*/
+/**
+ * 修改笔记仓库内容 保存笔记 ok
+ * */
 app.post('/updatenote',(req,res)=>{
   var str = '';
   var id,content,time;
@@ -184,7 +203,9 @@ app.post('/updatenote',(req,res)=>{
     res.send(obj);  
   });
 });
-/**用户更新头像 */
+/**
+ * 用户更新头像 
+ * */
 var upload = multer({dest:'uploads/'});
 app.post('/headimg/:id',upload.single('image'),(req,res) => {
   var id = req.params.id;
@@ -209,7 +230,9 @@ app.post('/headimg/:id',upload.single('image'),(req,res) => {
       });     
   });
 });
-/**获取用户头像 */
+/**
+ * 获取用户头像 
+ * */
 app.get('/gethead/:id',async (req,res) => {
   var id = req.params.id;
   var userimg;
@@ -229,24 +252,27 @@ app.get('/gethead/:id',async (req,res) => {
   }
 });
 /**
- * 删除某个笔记仓库
- * bug:创建，删除时笔记的id会造成插入异常
- * 
+ * 删除某个笔记仓库 ok
  *  */
 app.delete('/delnote/:id',async (req,res) => {
   var id = req.params.id;
-  var obj = await query('DELETE FROM notes where id=$1',[id]);
+  var obj = await query('DELETE FROM note where id=$1',[id]);
   obj = {
     success:true,
     message:'delete success'
   };
   res.send(obj);
 });
-/**克隆他人开源笔记仓库 */
+/**
+ * 克隆他人开源笔记仓库  ok
+ * */
 app.post('/clone',async (req,res) => {
   var str = '';
   var nid,uid,username,title,description,content,time,ispub,bid,buser,authority;
-  var authority = false;
+  var myDate = new Date();
+  time = myDate.toLocaleString( );        //获取日期与时间
+  authority = false;
+  ispub = true;
   req.on('data',function(data){
     str += data;
     console.log(str);
@@ -257,15 +283,20 @@ app.post('/clone',async (req,res) => {
     uid = json.uid;
     username = json.username;
     var figure1 = await query('SELECT uid,username,title,description,content,time,ispub,bid,buser FROM note where id=$1',[nid]);
-    buser = figure1[0].username;
+    bid = figure1[0].bid;
+    buser = figure1[0].buser;
     title = figure1[0].title;
     description = figure1[0].description;
     content = figure1[0].content;
-    time = figure1[0].time;
-    ispub = true;
-    bid = figure1[0].uid;
+    
     var figure2 = await query('SELECT id FROM note',[]);
-    var num = figure2[figure2.length-1].id+1;
+    var arr = [];
+    for(var i=0;i<figure2.length;i++){
+      var id = Number(figure2[i].id); //转字符为数字
+      arr.push(id);
+    }
+    var max = Math.max.apply(null, arr);
+    var num = max+1;
     var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,bid,buser,authority) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',[num,uid,username,title,description,content,time,ispub,bid,buser,authority]);
     obj = {
       success:true,
@@ -274,7 +305,9 @@ app.post('/clone',async (req,res) => {
     res.send(obj);
   });
 });
-/**原创授权他人更新推送源笔记仓库 */
+/**
+ * 原创授权他人更新推送源笔记仓库 
+ * */
 app.post('/agree',async (req,res) => {
   var str = '';
   var title,uid,bid;
@@ -295,7 +328,9 @@ app.post('/agree',async (req,res) => {
     res.send(obj);
   });
 });
-/**取消授权他人更新推送源笔记仓库 */
+/**
+ * 取消授权他人更新推送源笔记仓库 
+ * */
 app.post('/refuse',async (req,res) => {
   var str = '';
   var title,uid,bid;
@@ -316,7 +351,9 @@ app.post('/refuse',async (req,res) => {
     res.send(obj);
   });
 });
-/**原创获取所有克隆本仓库的用户 */
+/**
+ * 原创获取所有克隆本仓库的用户 
+ * */
 app.get('/copeuser/:id',async (req,res) => {
   var id = req.params.id;
   var figure = await query('SELECT title,bid FROM note WHERE id=$1',[id]);
@@ -330,7 +367,9 @@ app.get('/copeuser/:id',async (req,res) => {
   console.log(obj);
   res.send(obj);
 });
-/**授权用户同步推送自己仓库和原仓库 */
+/**
+ * 授权用户同步推送自己仓库和原仓库 
+ * */
 app.post('/otherudt',async (req,res) => {
   var str = '';
   var id,content,time;
@@ -384,7 +423,9 @@ app.get('/share',async (req,res) => {
     console.log(obj,obj.data.length,'笔记列表长度');
     res.send(obj);
 });
-/**媒体文件上传 */
+/**
+ * 访问媒体文件 
+ * */
 app.get('/getmediafile/:src',async (req,res) => {
   var src = './routes/media/file/'+req.params.src;
   var mediasrc = path.join(__dirname,src);
