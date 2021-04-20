@@ -9,14 +9,14 @@ function App() {
     setState(state);
     
   }
-  useEffect(()=>{
-    console.log(state)
-  },[state])
+  // useEffect(()=>{
+  //   console.log(state)
+  // },[state])
   return (
     <div className="App">
       {/* <Header /> */}
       { 
-        state
+        true
         ?<Body/>
         :<Login change={stateChange}/>
        }

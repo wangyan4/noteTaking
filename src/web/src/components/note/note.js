@@ -89,7 +89,7 @@ export default class NoteList extends Component {
                 ]}
                 >
                   <List.Item.Meta
-                    title={<a onClick={() => { this.editList(item, true) }}>{item.title}</a>}
+                    title={<a onClick={() => { this.editList(item, false) }}>{item.title}</a>}
                     description={item.description}
                   />
                 </List.Item>

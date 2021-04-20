@@ -1,5 +1,5 @@
 import React, { Component, createRef } from 'react';
-import { Menu, Button, Modal, Empty } from 'antd';
+import { Menu, Button, Modal, Empty, Input, message } from 'antd';
 import _ from 'loadsh';
 import {
   MenuUnfoldOutlined,
@@ -8,9 +8,9 @@ import {
 import Editor from '../Editor/editor';
 import NoteList from '../note/note';
 import http from '../../server';
-
-
 import './body.css';
+
+const { TextArea } = Input;
 function GenNonDuplicateID(randomLength) {
   return Number(Math.random().toString().substr(3, randomLength) + Date.now()).toString(36)
 }
@@ -28,7 +28,7 @@ const data = [
     content: "<p>沐浴之王</p>"
   }
 ];
-const data1 = [
+const groundData = [
   {
     id: GenNonDuplicateID(8),
     title: '战狼2',
@@ -54,10 +54,11 @@ const data1 = [
     content: "<p>功夫之王</p>"
   }
 ];
-
+let _this;
 export default class NavBar extends Component {
   constructor() {
     super();
+    _this = this;
     this.previewDom = createRef();
     this.state = {
       collapsed: false,
@@ -66,8 +67,12 @@ export default class NavBar extends Component {
       editItem: {}, //当前操作项
       showItem: data[0],//editor 展示项
       data: data, //我的笔记列表
-      data1: data1, //分享列表
+      groundData: groundData, //分享列表
       flag: false, //预览页显示
+      modal1Visible:false,
+      description:"",
+      title:"",
+      newStatus:false
     };
   }
   toggleCollapsed = () => {
@@ -75,6 +80,10 @@ export default class NavBar extends Component {
       collapsed: !this.state.collapsed,
     });
   };
+  componentDidMount(){
+   _this.getList();
+    
+  }
 
   menuChange = (code) => {
     var changeObj = {
@@ -89,6 +98,15 @@ export default class NavBar extends Component {
         isShow: true,
         flag: false
       });
+    }
+    if(code == 'ground'){
+      http.get('share')
+      .then(data=>{
+        console.log(data);
+        this.setState({
+          groundData:data.data.data
+        })
+      })
     }
     this.setState({
       showPage: changeObj[code],
@@ -122,7 +140,7 @@ export default class NavBar extends Component {
   }
 
 
-  delItem = (currentItem) => {
+  async delItem (currentItem) {
     let editItem = currentItem.item;
     Modal.confirm({
       title: '确认',
@@ -131,28 +149,30 @@ export default class NavBar extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        let _this = this;
-        let newList = _.filter(_this.state.data, function (o) {
-          return o.id != editItem.id;
-        })
-        if (editItem.id == this.state.showItem.id && newList.length != 0) {
-          this.setState({
-            data: newList,
-            editItem,
-            showItem: newList[0]
-          })
-        } else {
-          this.setState({
-            data: newList,
-            editItem,
-            showItem: {
-              id: null,
-              description: null,
-              content: null,
-              title: null
+        // let newList = _.filter(_this.state.data, function (o) {
+        //   return o.id != editItem.id;
+        // })
+        http.delete(`delnote/${editItem.id}`).then(data=>{
+          if(data.data.success){
+            _this.getList();
+            if (_this.state.showItem && _this.state.showItem.id && editItem.id == _this.state.showItem.id && _this.state.data.length != 0) {
+              _this.setState({
+                editItem,
+                showItem: _this.state.data[0]
+              })
+            } else {
+              _this.setState({
+                editItem,
+                showItem: {
+                  id: null,
+                  description: null,
+                  content: null,
+                  title: null
+                }
+              });
             }
-          });
-        }
+          }
+        })
       }
     });
   }
@@ -160,13 +180,46 @@ export default class NavBar extends Component {
   addItem = () => {
     this.setState({
       isShow: false,
-      showItem: {}
+      showItem: {},
+      modal1Visible:true,
+      newStatus:true,
+      title:"",
+      description:""
     })
   }
 
   onSave =(isShow)=>{
+    _this.getList()
     this.setState({
       isShow:isShow
+    })
+  }
+  getList = ()=>{
+    var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
+    http.get( `allnotes/${user.id}`).then((data)=>{
+      if(data.data.success){
+        _this.setState({
+          data:data.data.data,
+        })
+      } else {
+        message.error('获取列表失败')
+      }
+    });
+      
+  }
+  setModal1Visible = (showState)=>{
+    this.setState({
+      modal1Visible:showState
+    })
+  }
+  onDescriptionChange = ({ target: { value } })=>{
+    this.setState({
+      description: value
+    })
+  }
+  onTitleChange = ({ target: { value } })=>{
+    this.setState({
+      title: value
     })
   }
 
@@ -208,8 +261,8 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1
               ? <div className="editor">
-                {this.state.data.length && this.state.isShow
-                ?<Editor editItem={this.state.showItem} save={this.onSave}/>
+                {this.state.showItem && !this.state.isShow
+                ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description}} newStatus={this.state.newStatus} save={this.onSave}/>
                 :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                 }
                 {/* {!this.state.isShow
@@ -222,7 +275,14 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 2
               ? <div className="noteList">
-                <NoteList preview={this.preview} isPersonal data={this.state.data1} delItem={this.delItem} />
+                <NoteList preview={this.preview} isPersonal data={this.state.groundData} delItem={this.delItem} />
+              </div>
+              : null
+          }
+          {
+            this.state.showPage == 3
+              ? <div className="noteList">
+                <NoteList preview={this.preview} isPersonal data={this.state.groundData} delItem={this.delItem} />
               </div>
               : null
           }
@@ -231,6 +291,27 @@ export default class NavBar extends Component {
             style={!this.state.flag ? { display: "none" } : { display: "block" }}
           ></div>
         </div>
+        <Modal
+          title="新建笔记"
+          style={{ top: 20 }}
+          visible={this.state.modal1Visible}
+          onOk={() => this.setModal1Visible(false)}
+          onCancel={() => this.setModal1Visible(false)}
+        >
+          
+          <p>
+            标题:<Input placeholder="请输入标题" onChange = {this.onTitleChange} value={this.state.title}/>
+          </p>
+          <p>
+            描述:
+            <TextArea
+              value={this.state.description}
+              onChange={this.onDescriptionChange}
+              placeholder="请输入描述"
+              autoSize={{ minRows: 3, maxRows: 5 }}
+            />
+          </p>
+        </Modal>
       </div>
     );
   }
