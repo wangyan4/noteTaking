@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
     console.log('查询用户列表');
     var figure = await query('SELECT id,username,passwd,email,phone FROM userlist',[]);
     let obj = {
-      status:0,
+      success:true,
       data:JSON.parse(JSON.stringify(figure))
     }
     console.log(obj);
