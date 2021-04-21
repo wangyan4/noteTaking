@@ -92,6 +92,7 @@ export default class NavBar extends Component {
       my: "3"
     }
     if (code == 'note') {
+      _this.getList();
       this.setState({
         showPage: changeObj[code],
         showItem: this.state.data[0] ? this.state.data[0] : {},
@@ -179,7 +180,7 @@ export default class NavBar extends Component {
 
   addItem = () => {
     this.setState({
-      isShow: false,
+      isShow: true,
       showItem: {},
       modal1Visible:true,
       newStatus:true,
@@ -188,18 +189,33 @@ export default class NavBar extends Component {
     })
   }
 
-  onSave =(isShow)=>{
-    _this.getList()
-    this.setState({
-      isShow:isShow
-    })
+  onSave =(isShow, newData)=>{
+    _this.getList();
+    var { showItem } = this.state;
+    if(newData){
+      showItem.content = newData.content;
+      this.setState({
+        isShow:isShow,
+        showItem
+      })
+    }else{
+      this.setState({
+        isShow:isShow,
+        showItem:this.state.data?this.state.data[0]:[]
+      })
+    }
   }
   getList = ()=>{
     var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
     http.get( `allnotes/${user.id}`).then((data)=>{
       if(data.data.success){
+        var showItem = [];
+        if(data.data.data){
+          showItem = data.data.data[0]
+        }
         _this.setState({
           data:data.data.data,
+          showItem
         })
       } else {
         message.error('获取列表失败')
@@ -261,7 +277,7 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1
               ? <div className="editor">
-                {this.state.showItem.content
+                {this.state.editItem
                 ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description}} newStatus={this.state.newStatus} save={this.onSave}/>
                 :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                 }

@@ -131,7 +131,7 @@ export default class Editor extends React.Component {
 		http.post(url,params).then((data)=>{
 			if(data.data.success){
 				if(isMenu){
-					this.props.save(true)
+					this.props.save(true,params)
 				}
 			}
 		})
@@ -145,7 +145,7 @@ export default class Editor extends React.Component {
 	//由于图片上传、视频上传项目中都是单独走的接口，需要一个上传的方法
 	myUploadFn = (param) => {
 		console.log('param', param);
-		const serverURL = `${window.sessionStorage.baseURL ? JSON.parse(window.sessionStorage.baseURL) : ""}/fileHandle/upload`//上传接口地址
+		const serverURL = `http://xpmxia.cn.utools.club/mediaUpload`//上传接口地址
 		const xhr = new XMLHttpRequest();
 		const fd = new FormData();
 		if (param.file.type.indexOf("image") != "-1" && (param.file.size / 1024 / 1024) > 9) {
@@ -208,6 +208,8 @@ export default class Editor extends React.Component {
 		fd.append('file', param.file);
 		xhr.open('POST', serverURL, true);
 		//  xhr.setRequestHeader("X-Auth-Token", User.getToken());//header中token的设置
+		
+		// xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send(fd)
 
 	}
@@ -236,7 +238,7 @@ export default class Editor extends React.Component {
 					onChange={this.handleEditorChange}
 					onSave={this.submitContent.bind(this,false)}
 					extendControls={extendControls}
-					// media={{ uploadFn: this.myUploadFn }}
+					media={{ uploadFn: this.myUploadFn }}
 				/>
 			</div>
 		)
