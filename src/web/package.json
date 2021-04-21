@@ -40,13 +40,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy":{
-    "/api":{
-      "target":"http://xpmxia.cn.utools.club",
-      "changeOrigin":true,
-      "pathRewrite":{
-        "^/api":""
-      }
-    }
-  }
+  "proxy":"http://xpmxia.cn.utools.club"
 }

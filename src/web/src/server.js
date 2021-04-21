@@ -1,7 +1,7 @@
 import axios from 'axios';
 import qs from 'qs';
 
-let root = 'http://xpmxia.cn.utools.club/api/';
+let root = 'http://xpmxia.cn.utools.club/';
 let http = {
   post: "",
   get: "",
