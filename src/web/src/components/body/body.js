@@ -65,9 +65,9 @@ export default class NavBar extends Component {
       showPage: 1,//导航栏标志位
       isShow: true, //notelist是否显示
       editItem: {}, //当前操作项
-      showItem: data[0],//editor 展示项
-      data: data, //我的笔记列表
-      groundData: groundData, //分享列表
+      showItem: {},//editor 展示项
+      data: [], //我的笔记列表
+      groundData: [], //分享列表
       flag: false, //预览页显示
       modal1Visible:false,
       description:"",
@@ -261,7 +261,7 @@ export default class NavBar extends Component {
           {
             this.state.showPage == 1
               ? <div className="editor">
-                {this.state.showItem && !this.state.isShow
+                {this.state.showItem.content
                 ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description}} newStatus={this.state.newStatus} save={this.onSave}/>
                 :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                 }

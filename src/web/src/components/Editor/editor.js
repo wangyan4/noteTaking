@@ -55,7 +55,7 @@ export default class Editor extends React.Component {
 		if (nextProps.editItem.id) {
 			this.setState({
 				editItem: nextProps.editItem,
-				editorState: BraftEditor.createEditorState(defaultStr + nextProps.editItem.content)
+				editorState: BraftEditor.createEditorState(nextProps.editItem.content)
 			})
 		} else {
 			this.setState({
@@ -94,23 +94,41 @@ export default class Editor extends React.Component {
 		// message.success('保存成功！', 2)
 		const htmlContent = this.state.editorState.toHTML()
 		console.log(htmlContent);
-		this.state.editItem.id
-			? message.info('edit',2)
-			:message.info('add',2)
-		const result = await _this.saveEditorContent(htmlContent,isMenu)
+		//0 新建 1 保存
+		if(this.state.editItem.id){
+			await _this.saveEditorContent(htmlContent,isMenu,'1')
+		} else {
+			await _this.saveEditorContent(htmlContent,isMenu,'0')
+		}
+
+			// ? message.info('edit',2)
+			// :message.info('add',2)
+		// const result = await _this.saveEditorContent(htmlContent,isMenu)
 		
 	}
 	//向后台发送请求保存当前数据
-	saveEditorContent = (data,isMenu) => {
+	saveEditorContent = (data,isMenu,isNew) => {
 		var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
-		http.post(`notecreate`,{
-			"uid":user.id,
-			"username":user.username,
-			"title":this.props.aritcle.title,
-			"description":this.props.aritcle.description,
-			"content":data,
-			"ispub":true
-		}).then((data)=>{
+		var url = "";
+		var params = {}
+		if(isNew == "0"){
+			url = "notecreate";
+			params = {
+				"uid":user.id,
+				"username":user.username,
+				"title":this.props.aritcle.title,
+				"description":this.props.aritcle.description,
+				"content":data,
+				"ispub":true
+			}
+		} else {
+			url = "updatenote";
+			params = {
+				"id":this.state.editItem.id,
+				"content":data
+			}
+		}
+		http.post(url,params).then((data)=>{
 			if(data.data.success){
 				if(isMenu){
 					this.props.save(true)

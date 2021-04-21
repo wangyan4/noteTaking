@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       {/* <Header /> */}
       { 
-        true
+        state
         ?<Body/>
         :<Login change={stateChange}/>
        }

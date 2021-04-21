@@ -83,13 +83,13 @@ export default class NoteList extends Component {
                 <List.Item
                   style={{marginLeft:50}}
                   actions={[<a key="list-loadmore-delete" onClick={() => {  }}>分享</a>, 
-                  <a  key="list-loadmore-edit" onClick={() => { this.editList(item, false) }}>编辑</a>, 
+                  <a  key="list-loadmore-edit" onClick={() => { this.editList(item, true) }}>编辑</a>, 
                   <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
                   
                 ]}
                 >
                   <List.Item.Meta
-                    title={<a onClick={() => { this.editList(item, false) }}>{item.title}</a>}
+                    title={<a onClick={() => { this.editList(item, true) }}>{item.title}</a>}
                     description={item.description}
                   />
                 </List.Item>
