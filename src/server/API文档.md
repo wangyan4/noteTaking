@@ -364,9 +364,9 @@ const post = {
 }
 ```
 
-### 12. 克隆他人开源笔记仓库 （默认authority=false,原作者授权后可协作更新笔记） 重写！！！
+### 12. 克隆他人开源笔记仓库（首次调用是克隆，再次则是更新） （默认authority=false,原作者授权后可协作更新笔记） （已测 OK）
 
-**必选参数：nid,uid,username**
+**必选参数：nid,uid**
 
 **接口地址：post，/clone** 
 
@@ -374,9 +374,8 @@ const post = {
 
 ```json
 const post = {
-    "nid":"1", "需要克隆的笔记仓库id"
-	"uid":"1", "克隆他人笔记的用户的id"
-	"username":"hello" "uid的用户名"
+    "nid":"1619079568333", "源笔记仓库id"
+	"uid":"1618923351959", "当前用户id，非该笔记作者id"
 }
 ```
 
