@@ -26,7 +26,7 @@ router.post('/',audioupload.single('file'), async (req, res) => {
     
       console.log(keepname);
       var audiosrc = keepname;
-      var url = 'http://192.168.88.144:8002/getmediafile/'+keepname;  //http://xpmxia.cn.utools.club
+      var url = 'http://xpmxia.cn.utools.club/getmediafile/'+keepname;  //http://xpmxia.cn.utools.club
 
       let obj = {
         success:true,

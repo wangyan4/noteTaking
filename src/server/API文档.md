@@ -72,7 +72,7 @@ const post ={
 }
 ```
 
-### 3. 媒体文件上传（图片，音频，视频）（已测，OK）
+### 3. 媒体文件上传（图片，音频，视频）（已测，有bug 视频大文件无法上传存储）
 
 **必选参数：**
 
@@ -99,7 +99,7 @@ fd.append('file', param.file);
 
 ```
 
-### 4. 编辑修改，保存笔记 （已测，OK）
+### 4. 编辑修改，保存笔记（适用源仓库更新，无权限的克隆仓库更新） （已测，OK）
 
 **必选参数：id（笔记仓库id）,content（HTML格式笔记内容）**
 
@@ -341,7 +341,7 @@ const post = {
 }
 ```
 
-### 11. 是否同意开源（克隆）（已测，OK）
+### 12. 是否同意开源（克隆）（已测，OK）
 
 **必选参数：id(笔记id),flag**
 
@@ -364,7 +364,7 @@ const post = {
 }
 ```
 
-### 12. 克隆他人开源笔记仓库（首次调用是克隆，再次则是更新） （默认authority=false,原作者授权后可协作更新笔记） （已测 OK）
+### 13. 克隆他人开源笔记仓库（首次调用是克隆，再次则是更新） （默认authority=false,原作者授权后可协作更新笔记） （已测 有bug 再次克隆更新时直接覆盖了 非差异合并）
 
 **必选参数：nid,uid**
 
@@ -388,9 +388,9 @@ const post = {
 }
 ```
 
-### 13. 原创是否授权他人更新推送原笔记仓库   重写！！！
+### 14. 原创授权克隆该笔记的某用户推送原笔记仓库，默认为false   (已测 OK)
 
-**必选参数：title,uid,bid,flag(true为授权；false取消授权)**
+**必选参数：nid,uid,flag(true为授权；false取消授权)**
 
 **接口地址：post，/agree** 
 
@@ -398,9 +398,8 @@ const post = {
 
 ```json
 const post = {
-    "title":"笔记标题","该笔记仓库名"
-    "uid":"1", "克隆该笔记的用户id，授权后有权更新原仓库"
-	"bid":"2", "该笔记仓库创建用户id"
+    "nid":"1619079568333","该笔记仓库id(源仓库)"
+    "uid":"1618923351959", "源仓库作者授权给该uid用户 授权后该uid用户可往源仓库推送笔记 非源作者id"
 	"flag":true
 }
 ```
@@ -416,7 +415,7 @@ const post = {
 
 
 
-### 15. 原创获取所有克隆本仓库的用户
+### 15. 用户某源仓库获取所有克隆本仓库的用户信息（用于授权） （已测 ok）
 
 **必选参数：**
 
@@ -440,24 +439,33 @@ const post = {
 }
 ```
 
-### 16. 克隆笔记的用户同步推送自己仓库和原仓库
+### 16. 克隆仓库的更新，同步推送此克隆仓库和原仓库（有权限时调用）（已测 有bug 直接覆盖了源仓库 非diff）
 
-**必选参数：id（克隆笔记仓库id）,content,time;**
+**必选参数：id（该克隆仓库id）,content**
 
-**接口地址：post，/otherudt** 
+**接口地址：post，/teampush** 
+
+**请求数据：**
+
+```json
+const post = {
+    "id":"1619099791222",
+    "content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>"
+}
+```
 
 **返回数据：**
 
 ```json
-//授权用户
+//有权限
 {
     "success":true,
 	"message":"push success"
 }
-//非授权用户
+//有权限
 {
-    "success":true,
-	"message":"no authority,push fail!"
+    "success":false,
+	"message":"no authority push!clone note push success,but origin note push fail!"
 }
 ```
 
@@ -489,6 +497,8 @@ const post = {
 	}]
 }
 ```
+
+
 
 ### 18. 用户更新头像
 
