@@ -13,7 +13,7 @@ router.post('/',audioupload.single('file'), async (req, res) => {
     console.log(req.file);
     fs.readFile(req.file.path,async (err,data)=>{
       if(err){return res.send('上传失败')} 
-      let time=rnum;
+      let time=Date.now()+parseInt(Math.random()*999)+parseInt(Math.random()*2222);
       let extname=req.file.mimetype.split('/')[1];
       let keepname=time+'.'+extname;  
       fs.writeFile(path.join(__dirname,'file/'+keepname),data,(err)=>{
@@ -26,7 +26,7 @@ router.post('/',audioupload.single('file'), async (req, res) => {
     
       console.log(keepname);
       var audiosrc = keepname;
-      var url = 'http://xpmxia.cn.utools.club/getmediafile/'+keepname;  //http://xpmxia.cn.utools.club
+      var url = 'http://xpmxia.cn.utools.club/getmediafile/'+keepname;  //http://xpmxia.cn.utools.club  
 
       let obj = {
         success:true,
