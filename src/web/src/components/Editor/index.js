@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React from 'react'
 // 引入编辑器组件
 import BraftEditor from 'braft-editor'
