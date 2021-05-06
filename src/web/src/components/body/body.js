@@ -1,12 +1,13 @@
 import React, { Component, createRef } from 'react';
-import { Menu, Button, Modal, Empty, Input, message } from 'antd';
+import { Menu, Button, Modal, Empty, Input, message, Checkbox } from 'antd';
 import _ from 'loadsh';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined
 } from '@ant-design/icons';
-import Editor from '../Editor/editor';
-import NoteList from '../note/note';
+import Editor from '../editor';
+import NoteList from '../note';
+import MySpace from '../myspace'
 import http from '../../server';
 import './body.css';
 
@@ -72,7 +73,8 @@ export default class NavBar extends Component {
       modal1Visible:false,
       description:"",
       title:"",
-      newStatus:false
+      newStatus:false,
+      checked:false
     };
   }
   toggleCollapsed = () => {
@@ -185,7 +187,8 @@ export default class NavBar extends Component {
       modal1Visible:true,
       newStatus:true,
       title:"",
-      description:""
+      description:"",
+      checked:false
     })
   }
 
@@ -238,6 +241,11 @@ export default class NavBar extends Component {
       title: value
     })
   }
+  onPubChange = (e)=>{
+    this.setState({
+      checked: e.target.checked,
+    });
+  }
 
   render() {
     return (
@@ -278,7 +286,7 @@ export default class NavBar extends Component {
             this.state.showPage == 1
               ? <div className="editor">
                 {this.state.editItem
-                ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description}} newStatus={this.state.newStatus} save={this.onSave}/>
+                ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description,"isPub":this.state.checked?1:0}} newStatus={this.state.newStatus} save={this.onSave}/>
                 :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                 }
                 {/* {!this.state.isShow
@@ -297,8 +305,8 @@ export default class NavBar extends Component {
           }
           {
             this.state.showPage == 3
-              ? <div className="noteList">
-                <NoteList preview={this.preview} isPersonal data={this.state.groundData} delItem={this.delItem} />
+              ? <div className="my">
+                <MySpace preview={this.preview} isPersonal data={this.state.groundData} delItem={this.delItem} />
               </div>
               : null
           }
@@ -326,6 +334,14 @@ export default class NavBar extends Component {
               placeholder="请输入描述"
               autoSize={{ minRows: 3, maxRows: 5 }}
             />
+          </p>
+          <p>
+            是否开源:&ensp;
+            <Checkbox
+            checked={this.state.checked}
+            onChange={this.onPubChange}
+            >
+            </Checkbox>
           </p>
         </Modal>
       </div>
