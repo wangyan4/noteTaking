@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { List } from 'antd';
-
+import http from '../../server';
 import './index.css';
 function GenNonDuplicateID(randomLength) {
   return Number(Math.random().toString().substr(3, randomLength) + Date.now()).toString(36)
@@ -25,13 +25,25 @@ let data =[
     content: "<p>你好，李焕英</p>"
   },
 ]
+let _this;
 export default class index extends Component {
   constructor(){
     super();
+    _this =this;
     this.state={
       myapprove:[],
       approve:[]
     }
+  }
+  componentDidMount(){
+
+  }
+  getList(){
+    http.get( `allnotes/`)
+      .then(()=>{
+
+      });
+    // http.get('copeuser')
   }
   agree = (id)=>{
     console.log("I'm agree %s", id);

@@ -278,7 +278,7 @@ export default class NavBar extends Component {
               ? <div className="noteList">
                 <Button type="primary" shape="round" onClick={() => { this.addItem() }}>新建</Button>
                 {/* <Button type="default">新增</Button> */}
-                <NoteList preview={this.preview} data={this.state.data} delItem={this.delItem} />
+                <NoteList preview={this.preview} data={this.state.data} delItem={this.delItem} getList={this.getList} />
               </div>
               : null
           }
@@ -286,7 +286,7 @@ export default class NavBar extends Component {
             this.state.showPage == 1
               ? <div className="editor">
                 {this.state.editItem
-                ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description,"isPub":this.state.checked?1:0}} newStatus={this.state.newStatus} save={this.onSave}/>
+                ?<Editor editItem={this.state.showItem} aritcle={{"title":this.state.title,"description":this.state.description,"isPub":this.state.checked}} newStatus={this.state.newStatus} save={this.onSave}/>
                 :<Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                 }
                 {/* {!this.state.isShow

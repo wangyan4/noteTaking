@@ -52,7 +52,7 @@ export default class Editor extends React.Component {
 					<p class="title">标题:${titleStr}</p><br>
 					<p class="description">描述:${descriptionStr}</p><br><hr><br>
 			`;
-		if (nextProps.editItem.id) {
+		if (nextProps.editItem && nextProps.editItem.id) {
 			this.setState({
 				editItem: nextProps.editItem,
 				editorState: BraftEditor.createEditorState(nextProps.editItem.content)
@@ -119,7 +119,7 @@ export default class Editor extends React.Component {
 				"title":this.props.aritcle.title,
 				"description":this.props.aritcle.description,
 				"content":data,
-				"ispub":true
+				"ispub":this.props.aritcle.isPub
 			}
 		} else {
 			url = "updatenote";

@@ -114,7 +114,7 @@ export default class Login extends Component {
     }).then((data)=>{
       if(data.data.success){
         if(data.data.data.id){
-          localStorage.setItem("user",window.btoa(window.encodeURIComponent(JSON.stringify({id:data.data.data.id,name:data.data.data.username}))));
+          localStorage.setItem("user",window.btoa(window.encodeURIComponent(JSON.stringify(data.data.data))));
           this.props.change(true);
           //存
         }

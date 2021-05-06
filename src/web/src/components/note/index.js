@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { List, Avatar, message, Modal } from 'antd';
+import http from '../../server';
 
 // function GenNonDuplicateID(randomLength) {
 //   return Number(Math.random().toString().substr(3, randomLength) + Date.now()).toString(36)
@@ -46,7 +47,34 @@ export default class NoteList extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-
+        var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
+        var params = {
+          "nid":item.id,
+          "uid":user.id
+        }
+        http.post('clone',params)
+          .then(data=>{
+            if(data.data.success){
+              message.success('克隆成功');
+            } else {
+              message.success('克隆失败');
+            }
+          })
+      }
+    });
+  }
+  shareNote = (item)=>{
+    var msg = item.ispub ? "确认要取消分享吗?":"确认要分享吗?"
+    Modal.confirm({
+      title: '确认',
+      // icon: <ExclamationCircleOutlined />,
+      content: msg,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        http.get(`setShare/id=${item.id}&flag=${!item.ispub}`).then(()=>{
+          this.props.getList();
+        });
       }
     });
   }
@@ -82,7 +110,7 @@ export default class NoteList extends Component {
               renderItem={item => (
                 <List.Item
                   style={{marginLeft:50}}
-                  actions={[<a key="list-loadmore-delete" onClick={() => {  }}>分享</a>, 
+                  actions={[<a key="list-loadmore-delete" onClick={() => { this.shareNote(item)  }}>{item.ispub?"取消":"分享"}</a>, 
                   <a  key="list-loadmore-edit" onClick={() => { this.editList(item, true) }}>编辑</a>, 
                   <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
                   
