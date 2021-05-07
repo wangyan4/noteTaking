@@ -120,7 +120,8 @@ export default class NoteList extends Component {
                     <a  key="list-loadmore-edit" onClick={() => { this.editList(item, true) }}>编辑</a>, 
                     <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
                   ]:[
-                    <a  key="list-loadmore-edit" onClick={() => { this.submitEdit(item) }}>申请编辑</a>
+                    <a  key="list-loadmore-edit" onClick={() => { this.submitEdit(item) }}>申请编辑</a>,
+                    <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
                 ]}
                 >
                   <List.Item.Meta

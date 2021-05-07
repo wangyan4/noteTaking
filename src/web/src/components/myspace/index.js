@@ -74,10 +74,9 @@ export default class index extends Component {
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
         var params = {
-          "nid":item.id,
-          "uid":user.id,
+          "nid":item.copy_id,
+          "uid":item.uid,
           flag:flag
         }
         http.post(`agree`,params).then(()=>{
@@ -104,7 +103,7 @@ export default class index extends Component {
                 <List.Item
                   style={{marginLeft:50}}
                   actions={[
-                  <a style={{ marginRight: 30 }} key="list-myapprove" onClick={() => {  }}>{Math.random()>0.5?"已同意":"已拒绝"}</a>
+                  <a style={{ marginRight: 30 }} key="list-myapprove" onClick={() => {  }}>{item.authority?"已同意":"已拒绝"}</a>
                   ]}
                 >
                   <List.Item.Meta
