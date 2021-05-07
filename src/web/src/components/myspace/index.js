@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List } from 'antd';
+import { List, message } from 'antd';
 import http from '../../server';
 import './index.css';
 function GenNonDuplicateID(randomLength) {
@@ -36,14 +36,33 @@ export default class index extends Component {
     }
   }
   componentDidMount(){
-
+    this.getList()
   }
   getList(){
-    http.get( `allnotes/`)
-      .then(()=>{
+    // http.get( `allnotes/`)
+    //   .then(()=>{
 
-      });
-    // http.get('copeuser')
+    //   });
+    var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
+    http.get(`clonelist/${user.id}`)
+      .then((data)=>{
+        if(data.data.data){
+          // message.warning('success')
+          _this.setState({
+            myapprove:data.data.data
+          })
+        }
+    })
+    http.get(`reqlist/${user.id}`)
+      .then((data)=>{
+        if(data.data.data){
+          // message.warning('success')
+          _this.setState({
+            approve:data.data.data
+          })
+        }
+        
+    })
   }
   agree = (id)=>{
     console.log("I'm agree %s", id);
@@ -63,7 +82,7 @@ export default class index extends Component {
         <div className="mybottomleft">
           <List
               itemLayout={"horizontal"}
-              dataSource={data}
+              dataSource={myapprove}
               renderItem={item => (
                 <List.Item
                   style={{marginLeft:50}}
@@ -83,7 +102,7 @@ export default class index extends Component {
         <div className="mybottomright">
           <List
             itemLayout={"horizontal"}
-            dataSource={data}
+            dataSource={approve}
             renderItem={item => (
               <List.Item
                 style={{marginLeft:50}}

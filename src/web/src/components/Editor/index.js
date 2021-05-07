@@ -124,6 +124,9 @@ export default class Editor extends React.Component {
 			}
 		} else {
 			url = "updatenote";
+			if(this.state.editItem.copy_id == ""){
+				url = 'teampush'
+			}
 			params = {
 				"id":this.state.editItem.id,
 				"content":data
@@ -234,6 +237,7 @@ export default class Editor extends React.Component {
 		return (
 			<div className="braft-output-content">
 				<BraftEditor
+					disabled={this.state.editItem.authority==false?!this.state.editItem.authority:false}
 					placeholder="请输入正文内容"
 					value={editorState}
 					onChange={this.handleEditorChange}

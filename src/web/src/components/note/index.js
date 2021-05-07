@@ -73,10 +73,14 @@ export default class NoteList extends Component {
       cancelText: '取消',
       onOk: () => {
         http.get(`setShare/id=${item.id}&flag=${!item.ispub}`).then(()=>{
+          message.success('分享成功');
           this.props.getList();
         });
       }
     });
+  }
+  submitEdit = (item)=>{
+    message.warning('请耐心等待作者同意')
   }
 
   render() {
@@ -110,10 +114,13 @@ export default class NoteList extends Component {
               renderItem={item => (
                 <List.Item
                   style={{marginLeft:50}}
-                  actions={[<a key="list-loadmore-delete" onClick={() => { this.shareNote(item)  }}>{item.ispub?"取消":"分享"}</a>, 
-                  <a  key="list-loadmore-edit" onClick={() => { this.editList(item, true) }}>编辑</a>, 
-                  <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
-                  
+                  actions={
+                    item.authority ? [
+                    !item.copy_id?<a key="list-loadmore-delete" onClick={() => { this.shareNote(item)  }}>{item.ispub?"取消":"分享"}</a>:"", 
+                    <a  key="list-loadmore-edit" onClick={() => { this.editList(item, true) }}>编辑</a>, 
+                    <a key="list-loadmore-delete" onClick={() => { this.delList(item) }}>删除</a>
+                  ]:[
+                    <a  key="list-loadmore-edit" onClick={() => { this.submitEdit(item) }}>申请编辑</a>
                 ]}
                 >
                   <List.Item.Meta
