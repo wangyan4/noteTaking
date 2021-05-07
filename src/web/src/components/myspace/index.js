@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { List, message } from 'antd';
+import { List, message, Modal } from 'antd';
 import http from '../../server';
 import './index.css';
 function GenNonDuplicateID(randomLength) {
@@ -64,11 +64,28 @@ export default class index extends Component {
         
     })
   }
-  agree = (id)=>{
-    console.log("I'm agree %s", id);
-  }
-  disagree = (id)=>{
-    console.log("I'm disagree %s", id);
+  isAgree = (item,flag)=>{
+    console.log("I'm agree %s", item.id);
+    var msg = flag?'是否同意？':'是否拒绝？'
+    Modal.confirm({
+      title: '确认',
+      // icon: <ExclamationCircleOutlined />,
+      content: msg,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => {
+        var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
+        var params = {
+          "nid":item.id,
+          "uid":user.id,
+          flag:flag
+        }
+        http.post(`agree`,params).then(()=>{
+          message.success('操作成功');
+          this.getList();
+        });
+      }
+    });
   }
   render() {
     // let {myapprove, approve} = this.state;
@@ -107,8 +124,8 @@ export default class index extends Component {
               <List.Item
                 style={{marginLeft:50}}
                 actions={[
-                  <a key="list-approve-agree" onClick={() => { this.agree(item.id) }}>同意</a>,
-                  <a style={{ marginRight: 30 }} key="list-approve-disagree" onClick={() => { this.disagree(item.id) }}>拒绝</a>
+                  <a key="list-approve-agree" onClick={() => { this.isAgree(item,true) }}>同意</a>,
+                  <a style={{ marginRight: 30 }} key="list-approve-disagree" onClick={() => { this.isAgree(item,false) }}>拒绝</a>
                 ]}
               >
                 <List.Item.Meta
