@@ -134,6 +134,7 @@ export default class Editor extends React.Component {
 		}
 		http.post(url,params).then((data)=>{
 			if(data.data.success){
+				message.success('保存成功');
 				if(isMenu){
 					this.props.save(true,params)
 				}

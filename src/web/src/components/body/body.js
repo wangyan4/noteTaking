@@ -106,6 +106,7 @@ export default class NavBar extends Component {
       http.get('share')
       .then(data=>{
         console.log(data);
+        data.data.data.sort((a,b)=>new Date(a.c_time)-new Date(b.c_time))
         this.setState({
           groundData:data.data.data
         })
@@ -216,6 +217,7 @@ export default class NavBar extends Component {
         if(data.data.data){
           showItem = data.data.data[0]
         }
+        data.data.data.sort((a,b)=>new Date(a.c_time)-new Date(b.c_time))
         _this.setState({
           data:data.data.data,
           showItem

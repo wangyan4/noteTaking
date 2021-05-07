@@ -48,6 +48,7 @@ export default class index extends Component {
       .then((data)=>{
         if(data.data.data){
           // message.warning('success')
+          data.data.data.sort((a,b)=>new Date(a.c_time)-new Date(b.c_time))
           _this.setState({
             myapprove:data.data.data
           })
@@ -57,6 +58,7 @@ export default class index extends Component {
       .then((data)=>{
         if(data.data.data){
           // message.warning('success')
+          data.data.data.sort((a,b)=>new Date(a.c_time)-new Date(b.c_time))
           _this.setState({
             approve:data.data.data
           })
