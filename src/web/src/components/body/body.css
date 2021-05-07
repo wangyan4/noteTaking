@@ -35,6 +35,9 @@
   box-sizing: border-box;
 
 }
+.content .editorPreview img{
+  max-width:95%;
+}
 .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left{
   border: none !important;
 }

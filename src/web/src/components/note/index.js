@@ -73,7 +73,8 @@ export default class NoteList extends Component {
       cancelText: '取消',
       onOk: () => {
         http.get(`setShare/id=${item.id}&flag=${!item.ispub}`).then(()=>{
-          message.success('分享成功');
+          var invalidMsg = msg.slice(3,-2)+"成功";
+          message.success(invalidMsg);
           this.props.getList();
         });
       }
