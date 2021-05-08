@@ -14,7 +14,8 @@
 }
 .content .noteList{
   flex:2;
-  padding:10px 5px 0;
+  /* width:20%; */
+  padding:10px 0px 0;
   height: 100%;
   box-sizing: border-box;
   border-left:2px solid rgba(255, 255, 255, 0.3);
@@ -23,9 +24,19 @@
 }
 .content .editor{
   flex:8;
+  /* width:80%; */
+
 }
 .content .editorPreview{
   flex:8;
+  /* width:80%; */
+  overflow-x: hidden;
+  padding-left: 10px;
+  box-sizing: border-box;
+
+}
+.content .editorPreview img{
+  max-width:95%;
 }
 .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left{
   border: none !important;

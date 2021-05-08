@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import React from 'react'
 // 引入编辑器组件
 import BraftEditor from 'braft-editor'
@@ -5,15 +6,17 @@ import BraftEditor from 'braft-editor'
 import 'braft-editor/dist/index.css'
 import './editor.css'
 // import 'braft-editor/dist/output.css'
+import http from '../../server';
 import { message } from 'antd';
 
 let titleStr = "", descriptionStr = "";
-// const defaultStr = `
-//     <p></p>
-//     <p class="title">标题:${titleStr}</p><br>
-//     <p class="description">描述:${descriptionStr}</p><br><hr>
-// `;
-const defaultStr = "";
+let defaultStr = `
+    <p></p>
+    <p class="title">标题:${titleStr}</p><br>
+    <p class="description">描述:${descriptionStr}</p><br><hr><br>
+`;
+// const defaultStr = "";
+let _this;
 export default class Editor extends React.Component {
 
 	state = {
@@ -28,10 +31,7 @@ export default class Editor extends React.Component {
 	fetchEditorContent = () => {
 		return defaultStr;
 	}
-	//向后台发送请求保存当前数据
-	saveEditorContent = () => {
-		return true
-	}
+	
 	// static getDerivedStateFromProps(nextProps, prevState) {
 	//     if(nextProps.editItem.id){
 	//         var state = BraftEditor.createEditorState(defaultStr + nextProps.editItem.content);
@@ -46,25 +46,43 @@ export default class Editor extends React.Component {
 	//     return null;
 	// }
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.editItem.id) {
-			titleStr = nextProps.editItem.title;
-			descriptionStr = nextProps.editItem.title;
+		titleStr = nextProps.aritcle.title;
+		descriptionStr = nextProps.aritcle.description;
+		defaultStr = `
+					<p></p>
+					<p class="title">标题:${titleStr}</p><br>
+					<p class="description">描述:${descriptionStr}</p><br><hr><br>
+			`;
+		if (nextProps.editItem && nextProps.editItem.id) {
 			this.setState({
 				editItem: nextProps.editItem,
-				editorState: BraftEditor.createEditorState(defaultStr + nextProps.editItem.content)
+				editorState: BraftEditor.createEditorState(nextProps.editItem.content)
 			})
 		} else {
 			this.setState({
 				editItem: nextProps.editItem,
-				editorState: BraftEditor.createEditorState(null)
+				editorState: BraftEditor.createEditorState(defaultStr)
 			})
 		}
 	}
 	async componentDidMount() {
+		_this = this;
 		// 假设此处从服务端获取html格式的编辑器内容
 		// const htmlContent = await this.fetchEditorContent()
-		const htmlContent = this.props.editItem.content?this.props.editItem.content:"";
-		// 使用BraftEditor.createEditorState将html字符串转换为编辑器需要的editorStat
+		let htmlContent = "";
+		let defaultStr = "";
+		if(this.props.newStatus){
+			titleStr = this.props.aritcle.title;
+			descriptionStr = this.props.aritcle.description;
+			defaultStr = `
+					<p></p>
+					<p class="title">标题:${titleStr}</p><br>
+					<p class="description">描述:${descriptionStr}</p><br><hr><br>
+			`;
+		}else{
+			htmlContent = this.props.editItem.content?this.props.editItem.content:"";
+			// 使用BraftEditor.createEditorState将html字符串转换为编辑器需要的editorStat
+		}
 		this.setState({
 			editorState: BraftEditor.createEditorState(defaultStr + htmlContent),
 			editItem:this.props.editItem
@@ -74,26 +92,65 @@ export default class Editor extends React.Component {
 	submitContent = async (isMenu) => {
 		// 在编辑器获得焦点时按下ctrl+s会执行此方法
 		// 编辑器内容提交到服务端之前，可直接调用editorState.toHTML()来获取HTML格式的内容
-		message.success('保存成功！', 2)
+		// message.success('保存成功！', 2)
 		const htmlContent = this.state.editorState.toHTML()
 		console.log(htmlContent);
-		this.state.editItem.id
-			? message.info('edit',2)
-			:message.info('add',2)
-		// const result = await saveEditorContent(htmlContent)
-		if(isMenu){
-			this.props.save(true)
+		//0 新建 1 保存
+		if(this.state.editItem.id){
+			await _this.saveEditorContent(htmlContent,isMenu,'1')
+		} else {
+			await _this.saveEditorContent(htmlContent,isMenu,'0')
 		}
+
+			// ? message.info('edit',2)
+			// :message.info('add',2)
+		// const result = await _this.saveEditorContent(htmlContent,isMenu)
+		
 	}
-
-
+	//向后台发送请求保存当前数据
+	saveEditorContent = (data,isMenu,isNew) => {
+		var user = JSON.parse(decodeURIComponent(window.atob(localStorage.getItem("user"))));
+		var url = "";
+		var params = {}
+		if(isNew == "0"){
+			url = "notecreate";
+			params = {
+				"uid":user.id,
+				"username":user.username,
+				"title":this.props.aritcle.title,
+				"description":this.props.aritcle.description,
+				"content":data,
+				"ispub":this.props.aritcle.isPub
+			}
+		} else {
+			url = "updatenote";
+			if(this.state.editItem.copy_id !== ""){
+				url = 'teampush'
+			}
+			params = {
+				"id":this.state.editItem.id,
+				"content":data
+			}
+		}
+		http.post(url,params).then((data)=>{
+			if(data.data.success){
+				message.success('保存成功');
+				if(isMenu){
+					this.props.save(true,params)
+				}
+			}
+		})
+	}
+	calcleContent = ()=>{
+		this.props.save(true)
+	}
 	handleEditorChange = (editorState) => {
 		this.setState({ editorState })
 	}
 	//由于图片上传、视频上传项目中都是单独走的接口，需要一个上传的方法
 	myUploadFn = (param) => {
 		console.log('param', param);
-		const serverURL = `${window.sessionStorage.baseURL ? JSON.parse(window.sessionStorage.baseURL) : ""}/fileHandle/upload`//上传接口地址
+		const serverURL = `http://xpmxia.cn.utools.club/mediaUpload`//上传接口地址
 		const xhr = new XMLHttpRequest();
 		const fd = new FormData();
 		if (param.file.type.indexOf("image") != "-1" && (param.file.size / 1024 / 1024) > 9) {
@@ -156,6 +213,8 @@ export default class Editor extends React.Component {
 		fd.append('file', param.file);
 		xhr.open('POST', serverURL, true);
 		//  xhr.setRequestHeader("X-Auth-Token", User.getToken());//header中token的设置
+		
+		// xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 		xhr.send(fd)
 
 	}
@@ -168,17 +227,24 @@ export default class Editor extends React.Component {
 				type: 'button',
 				text: '保存',
 				onClick: this.submitContent.bind(this,true)
+			},
+			{
+				key: 'custom-button2',
+				type: 'button',
+				text: '取消',
+				onClick: this.calcleContent.bind(this)
 			}
 		]
 		return (
 			<div className="braft-output-content">
 				<BraftEditor
+					disabled={this.state.editItem && this.state.editItem.authority==false?true:false}
 					placeholder="请输入正文内容"
 					value={editorState}
 					onChange={this.handleEditorChange}
 					onSave={this.submitContent.bind(this,false)}
 					extendControls={extendControls}
-					// media={{ uploadFn: this.myUploadFn }}
+					media={{ uploadFn: this.myUploadFn }}
 				/>
 			</div>
 		)

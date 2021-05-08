@@ -1,14 +1,17 @@
 import axios from 'axios';
 import qs from 'qs';
 
+let root = 'http://xpmxia.cn.utools.club/';
 let http = {
   post: "",
-  get: ""
+  get: "",
+  delete:""
 }
 http.post = function (api, data) {
-  let params = qs.stringify(data);
+  let url = root+api;
+  let params = data;
   return new Promise((resolve, reject) => {
-    axios.post(api, params).then((res) => {
+    axios.post(url, params).then((res) => {
       resolve(res);
     }).catch(error => {
       reject(error);
@@ -16,9 +19,21 @@ http.post = function (api, data) {
   })
 }
 http.get = function (api, data) {
-  let params = qs.stringify(data);
+  let url = root+api;
+  let params = data;
   return new Promise((resolve, reject) => {
-    axios.post(api, params).then((res) => {
+    axios.get(url, params).then((res) => {
+      resolve(res);
+    }).catch(error => {
+      reject(error);
+    })
+  })
+}
+http.delete = function (api, data) {
+  let url = root+api;
+  let params = data;
+  return new Promise((resolve, reject) => {
+    axios.delete(url, params).then((res) => {
       resolve(res);
     }).catch(error => {
       reject(error);

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Input, Button, Tooltip, message } from 'antd';
 import utils from '../utils'
 import { UserOutlined, UnlockOutlined } from '@ant-design/icons';
+import http from '../../server';
 import './login.css';
 
 export default class Login extends Component {
@@ -19,15 +20,20 @@ export default class Login extends Component {
 
   registerState = [0, 0]
 
-  statusChage = (status) => {
-    this.setState({
+  statusChage = (status,params) => {
+    let stateObj = {
       status,
       registeruser: "",
       registerpwd: "",
       comfirmpwd: "",
       loginuser: "",
       loginpwd: "",
-    })
+    }
+    if(params){
+      stateObj.loginuser = this.state.registeruser;
+      stateObj.loginpwd = this.state.registerpwd;
+    }
+    this.setState(stateObj)
   }
 
   userInput = (v, type) => {
@@ -102,21 +108,40 @@ export default class Login extends Component {
   }
 
   userLogin = () => {
-    // if(utils.isPhoneOrEmail(this.state.loginuser)){
-    //   if(utils.passwordAvailable(this.state.loginpwd)){
-
-    //   }else{
-
-    //   }
-    // }else{
-    //   message.info('请检查账户密码')
-    // }
-    this.props.change(true);
+    http.post('login',{
+      "em_ph":this.state.loginuser,
+      "passwd":this.state.loginpwd
+    }).then((data)=>{
+      if(data.data.success){
+        if(data.data.data.id){
+          localStorage.setItem("user",window.btoa(window.encodeURIComponent(JSON.stringify(data.data.data))));
+          this.props.change(true);
+          //存
+        }
+        else{
+          message.error('登录失败')
+          return ;
+        }  
+      }
+      else{
+        message.error("请检查用户名、密码");
+      }
+    })
     return true
   }
 
   userRegester = () => {
-
+    http.post('register',{
+      "em_ph":this.state.registeruser,
+      "passwd":this.state.registerpwd
+    }).then((data)=>{
+      if(data.data.success){
+        // this.props.change(true);
+        this.statusChage('login',{fromPage:'reggister'});
+      } else {
+        message.error("注册失败");
+      }
+    })
   }
 
   render() {
