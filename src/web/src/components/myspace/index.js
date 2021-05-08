@@ -98,6 +98,7 @@ export default class index extends Component {
         </div>
 
         <div className="mybottomleft">
+          <p>我请求的克隆仓库一览表</p>
           <List
               itemLayout={"horizontal"}
               dataSource={myapprove}
@@ -118,6 +119,7 @@ export default class index extends Component {
         </div>
 
         <div className="mybottomright">
+          <p>请求克隆我仓库一览表</p>
           <List
             itemLayout={"horizontal"}
             dataSource={approve}

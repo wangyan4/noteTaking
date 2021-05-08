@@ -1,0 +1,22 @@
+.upgrade{
+  width:20px;
+  height: 15px;
+  line-height: 15px;
+  border-radius: 25%;
+  border:1px solid rgb(0,147,255);
+  color: rgba(0,147,255,1);
+  background-color: rgba(0,147,255,.2);
+  font-size: 8px;
+  margin-left: 5px;
+}
+.upgrade:hover{
+  width:20px;
+  height: 15px;
+  line-height: 15px;
+  border-radius: 25%;
+  border:1px solid rgb(0,147,255);
+  color: rgba(0,147,255,1);
+  background-color: rgba(0,147,255,.2);
+  font-size: 8px;
+  margin-left: 5px;
+}
