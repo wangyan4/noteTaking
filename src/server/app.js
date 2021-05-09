@@ -144,7 +144,7 @@ app.post('/notecreate',(req,res)=>{
       //console.log(txtname,flag,'新建笔记txt 写入成功');
     });
     content=txtname;
-    var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,version) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',[nid,uid,username,title,description,content,time,ispub,true,uid,username,authority,true]);
+    var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,version,c_time) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',[nid,uid,username,title,description,content,time,ispub,true,uid,username,authority,true,time]);
     obj = {
       success:true,
       message:'create success'
@@ -157,7 +157,7 @@ app.post('/notecreate',(req,res)=>{
  * */
 app.get('/getnote/:id', async (req, res)=> {
   var id = req.params.id;
-  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority,copy_id,version,clone FROM note where id=$1',[id]);
+  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,bid,buser,authority,copy_id,version,clone,c_time FROM note where id=$1',[id]);
   read_txt(figure[0].content,function(filedata){
     figure[0].content = filedata;
     var obj = {
@@ -172,7 +172,7 @@ app.get('/getnote/:id', async (req, res)=> {
  * */ 
 app.get('/allnotes/:id', async (req, res)=> {
   var id = req.params.id;  
-  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,copy_id,version FROM note where uid=$1',[id]);
+  var figure = await query('SELECT id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,copy_id,version,c_time FROM note where uid=$1',[id]);
   for(var i=0;i<figure.length;i++){
     read_txt(figure[i].content,function(filedata,name){
       var flag=false;
@@ -193,6 +193,13 @@ app.get('/allnotes/:id', async (req, res)=> {
         res.send(obj);
       }  
     });
+  }
+  if(figure.length==0){
+    var obj = {
+      success:true,
+      data:figure
+    }
+    res.send(obj);
   }
   
 });
@@ -335,7 +342,7 @@ app.post('/clone',async (req,res) => {
     //username = json.username;
     var uname = await query('SELECT username FROM userlist where id=$1',[uid]);
     username = uname[0].username;
-    var figure1 = await query('SELECT uid,username,title,description,content,time,ispub,bid,buser FROM note where id=$1',[nid]);
+    var figure1 = await query('SELECT uid,username,title,description,content,time,ispub,bid,buser,c_time FROM note where id=$1',[nid]);
     bid = figure1[0].bid;
     buser = figure1[0].buser;
     title = figure1[0].title;
@@ -356,7 +363,7 @@ app.post('/clone',async (req,res) => {
       console.log('首次克隆');
       num = Date.now()+parseInt(Math.random()*999)+parseInt(Math.random()*2222)+'';
       content = num+'.txt';
-      var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,copy_id,version) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',[num,uid,username,title,description,content,time,ispub,false,bid,buser,authority,nid,true]);
+      var obj = await query('INSERT INTO note(id,uid,username,title,description,content,time,ispub,clone,bid,buser,authority,copy_id,version) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)',[num,uid,username,title,description,content,time,ispub,null,bid,buser,authority,nid,true]);
     }
     var name = nid+'.txt';
     var txtname = num+'.txt';
@@ -406,7 +413,7 @@ app.post('/agree',async (req,res) => {
  * */
 app.get('/copeuser/:id',async (req,res) => {
   var id = req.params.id;
-  var figure = await query('SELECT uid,username,authority,copy_id FROM note WHERE copy_id=$1',[id]);
+  var figure = await query('SELECT uid,username,authority,copy_id,c_time FROM note WHERE copy_id=$1',[id]);
   let obj = {
     success:true,
     data:figure
@@ -507,6 +514,7 @@ app.get('/setClone/:flag',async (req,res) => {
 /**
  * 功能：获取分享列表 ok
  *  */
+/*
 app.get('/share',async (req,res) => {
   var figure = await query('SELECT id,uid,username,title,description,content,time,bid,buser,ispub,clone,copy_id,authority,version FROM note where ispub=$1',[true]);
   // var data = [];  
@@ -540,11 +548,12 @@ app.get('/share',async (req,res) => {
   
 
 });
+*/
 /**
- * 功能：获取开源列表,所有可克隆的源仓库（不含克隆仓库） ok
+ * 功能：获取开源列表,所有可克隆的源仓库（不含克隆仓库） ok  /getClone
  *  */
-app.get('/getClone',async (req,res) => {
-  var figure = await query('SELECT id,uid,username,title,description,content,time,bid,ispub,clone,copy_id,version FROM note where clone=$1',[true]);
+app.get('/share',async (req,res) => {
+  var figure = await query('SELECT id,uid,username,title,description,content,time,bid,ispub,clone,copy_id,version,c_time FROM note where clone=$1 and ispub=$2',[true,true]);
   var data = [];  //可克隆的所有源仓库
   for(var i=0;i<figure.length;i++){
     if(figure[i].uid == figure[i].bid){
@@ -599,6 +608,94 @@ app.get('/getmediafile/:src',async (req,res) => {
 });
 
 /**
+ * 获取我克隆的他人所有笔记
+ */
+app.get('/clonelist/:id',async (req,res) => {
+  var id = req.params.id;
+  var figure = await query('SELECT * FROM note WHERE uid=$1',[id]);
+  var data = [];
+  for(var i=0;i<figure.length;i++){
+    if(figure[i].copy_id!=''){
+      data.push(figure[i]);
+    }
+  }
+  var obj = {
+    success:true,
+    data:data
+  };
+  res.send(obj);
+});
+/**
+ * 获取别人克隆我的笔记 为给别人授权
+ */
+app.get('/reqlist/:id',async (req,res) => {
+  var id = req.params.id;
+  var figure = await query('SELECT * FROM note WHERE bid=$1',[id]);
+  var data = [];
+  for(var i=0;i<figure.length;i++){
+    if(figure[i].uid!=id){
+      data.push(figure[i]);
+    }
+  }
+  var obj = {
+    success:true,
+    data:data
+  };
+  res.send(obj);
+});
+
+/**
+ * 笔记模糊查询 
+ */
+
+app.get('/like/:id',async (req,res) => {
+  var myobj = querystring.parse(req.params.id);
+  var data = [];
+  console.log(myobj,myobj.str,myobj.uid);
+  console.log('模糊查询:',myobj.str);
+  var figure = await query(`SELECT * FROM note WHERE title like '%${myobj.str}%' or description like '%${myobj.str}%'`,[]);
+  for(var i=0;i<figure.length;i++){
+    if(myobj.uid=='all'){
+      if(figure[i].clone){
+        data.push(figure[i]);
+      }
+    }else{
+      if(figure[i].clone==true && figure[i].uid==myobj.uid){
+        data.push(figure[i]);
+      }
+    }
+  }
+  for(var i=0;i<data.length;i++){
+    read_txt(data[i].content,function(filedata,name){
+      var flag=false;
+      for(var i=0;i<data.length;i++){
+        var key = data[i].id+'.txt';
+        if(key==name){
+          data[i].content=filedata;
+          if(i==data.length-1){
+            flag=true;
+          }
+        }
+      }
+      if(flag){
+        var obj = {
+          success:true,
+          data:data
+        }
+        res.send(obj);
+      }  
+    });
+  }
+  if(data.length==0){
+    var obj = {
+      success:true,
+      data:data
+    }
+    res.send(obj);
+  }
+});
+
+/**
  * content内容写入txt文件测试
  */
 app.get('/writetxt',async (req,res) => {
@@ -627,6 +724,16 @@ app.get('/readtxt',async (req,res) => {
   
 });
 
+/**
+ * 数据库c_time复制time
+ */
+app.get('/settime',async (req,res) => {
+  var figure = await query('SELECT id,time FROM note',[]);
+  for(var i=0;i<figure.length;i++){
+    var q = await query('UPDATE note SET c_time=$1 WHERE id=$2',[figure[i].time,figure[i].id]);
+  }
+  res.send('ok');
+})
 
 
 

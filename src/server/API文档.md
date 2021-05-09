@@ -4,6 +4,7 @@
 
 ------
 
+### 身份验证模块
 
 ### 1. 用户注册   
 
@@ -71,17 +72,25 @@ const post ={
 }
 ```
 
-### 3. 媒体文件上传（图片，音频，视频） 
+### 笔记创建模块
 
-**必选参数：**
+### 8. 新建笔记仓库(默认可分享可克隆)   
 
-**接口地址：post，/mediaUpload**
+**必选参数：uid,username,title,description,content,ispub（是否开源）**
+
+**接口地址：post，/notecreate**：
 
 **请求数据：**
 
 ```json
-const fd = new FormData();
-fd.append('file', param.file);
+const post = {
+    "uid":"1",
+    "username":"xiapeimin",
+    "title":"笔记标题",
+    "description":"这是笔记描述",
+    "content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>",
+    "ispub":true
+}
 ```
 
 **返回数据：**
@@ -89,13 +98,23 @@ fd.append('file', param.file);
 ```json
 {
     "success":true,
-	"data":"http://192.168.88.144:8002/getmediafile/1618479214325.jpeg"
+	"message":"create success"
 }
+```
+
+### 9. 删除笔记仓库（被克隆的源仓库删除后，其克隆仓库copy_id值置为空） 
+
+**必选参数：**
+
+**接口地址：delete，/delnote/:id（笔记仓库id）** 
+
+**返回数据：**
+
+```json
 {
     "success":true,
-	"data":"http://xpmxia.cn.utools.club/getmediafile/1618479214325.jpeg"
+	"message":"delete success"
 }
-
 ```
 
 ### 4. 编辑修改，保存笔记（适用源仓库更新，无权限的克隆仓库更新）  
@@ -152,6 +171,35 @@ const post ={
 	}]
 }
 ```
+
+
+### 3. 媒体文件上传（图片，音频，视频） 
+
+**必选参数：**
+
+**接口地址：post，/mediaUpload**
+
+**请求数据：**
+
+```json
+const fd = new FormData();
+fd.append('file', param.file);
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+	"data":"http://192.168.88.144:8002/getmediafile/1618479214325.jpeg"
+}
+{
+    "success":true,
+	"data":"http://xpmxia.cn.utools.club/getmediafile/1618479214325.jpeg"
+}
+
+```
+
 
 ### 6. 广场知识分享-获取分享列表（ispub=true） 
 
@@ -229,48 +277,7 @@ const post ={
 }
 ```
 
-### 8. 新建笔记仓库(默认可分享可克隆)   
 
-**必选参数：uid,username,title,description,content,ispub（是否开源）**
-
-**接口地址：post，/notecreate**：
-
-**请求数据：**
-
-```json
-const post = {
-    "uid":"1",
-    "username":"xiapeimin",
-    "title":"笔记标题",
-    "description":"这是笔记描述",
-    "content":"<p>你好，李焕英</p><div class=\"media-wrap image-wrap\"><img autoplay=\"\" controls=\"\" poster=\"\" src=\"http://192.168.88.144:8002/getmediafile/1618497829078.png\"/></div><p>哈哈哈</p>",
-    "ispub":true
-}
-```
-
-**返回数据：**
-
-```json
-{
-    "success":true,
-	"message":"create success"
-}
-```
-
-### 9. 删除笔记仓库（被克隆的源仓库删除后，其克隆仓库copy_id值置为空） 
-
-**必选参数：**
-
-**接口地址：delete，/delnote/:id（笔记仓库id）** 
-
-**返回数据：**
-
-```json
-{
-    "success":true,
-	"message":"delete success"
-}
-```
 
 
 ### 10. 获取某用户所有笔记仓库（含克隆）  
@@ -412,9 +419,51 @@ const post = {
 }
 ```
 
+### 15. 获取我克隆的他人所有笔记 (左侧)  
+
+**必选参数：id(用户id)**
+
+**接口地址：get，/clonelist/:id** 
+
+**请求数据：**
+
+```json
+
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+	"figure":[]
+}
+```
+
+### 16. 获取别人克隆我的笔记 为给别人授权 (右侧)  
+
+**必选参数：id(用户id)**
+
+**接口地址：get，/reqlist/:id** 
+
+**请求数据：**
+
+```json
+
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+	"figure":[]
+}
+```
 
 
-### 15. 用户某源仓库获取所有克隆本仓库的用户信息（用于授权）  
+
+### 17. 用户某源仓库获取所有克隆本仓库的用户信息（用于授权）  
 
 **必选参数：**
 
@@ -438,7 +487,7 @@ const post = {
 }
 ```
 
-### 16. 克隆仓库的更新，同步推送此克隆仓库和原仓库（有权限时调用）
+### 18. 克隆仓库的更新，同步推送此克隆仓库和原仓库（有权限时调用）
 
 **必选参数：id（该克隆仓库id）,content**
 
@@ -473,8 +522,47 @@ const post = {
 }
 ```
 
+### 19. 笔记模糊查询 
 
-### 17. 获取所有用户列表  
+**必选参数：**
+
+**接口地址：get，/like/:id** 
+
+**请求数据：str为关键字，uid为用户id或all**
+
+```json
+该用户现有笔记的模糊查询：（不包括其他用户开源笔记）
+'http://xpmxia.cn.utools.club/like/str=山河令&uid=1619079568333'
+
+模糊查询所有用户开源笔记:
+'http://xpmxia.cn.utools.club/like/str=山河令&uid=all'
+
+```
+
+**返回数据：**
+
+```json
+{
+    "success":true,
+    "data":[{		
+		"id":1, 
+		"username":"hello",
+		"passwd":"123",
+		"email":"14170377@qq.com",
+		"phone":"15230801658"		
+	},
+	{		
+		"id":2, 
+		"username":"hello2",
+		"passwd":"123",
+		"email":"14170377@qq.com",
+		"phone":"15230801658"		
+	}]
+}
+```
+
+
+### 20. 获取所有用户列表  
 
 **必选参数：**
 
@@ -504,7 +592,7 @@ const post = {
 
 
 
-### 18. 用户更新头像
+### 21. 用户更新头像
 
 **必选参数：**
 
@@ -525,7 +613,7 @@ const post = {
 }
 ```
 
-### 19. 获取用户头像
+### 22. 获取用户头像
 
 **必选参数：**
 
@@ -539,7 +627,7 @@ const post = {
 
 
 
-### 20. 获取图片测试
+### 23. 获取图片测试
 
 **必选参数：**
 
@@ -547,7 +635,7 @@ const post = {
 
 **返回数据：**
 
-### 21. 获取音频测试
+### 24. 获取音频测试
 
 **必选参数：**
 
@@ -555,7 +643,7 @@ const post = {
 
 **返回数据：**
 
-### 22. 获取视频测试
+### 25. 获取视频测试
 
 **必选参数：**
 
@@ -563,7 +651,7 @@ const post = {
 
 **返回数据：**
 
-### 23. 上传图片测试
+### 26. 上传图片测试
 
 **必选参数：**
 
@@ -571,7 +659,7 @@ const post = {
 
 **返回数据：**
 
-### 24. 上传录音测试
+### 27. 上传录音测试
 
 **必选参数：formData**：`formData.append('audiofile', e);`
 
@@ -579,7 +667,7 @@ const post = {
 
 **返回数据：**
 
-### 25. 上传视频测试
+### 28. 上传视频测试
 
 **必选参数：formData**：`formData.append('videofile', e);`
 
@@ -587,7 +675,7 @@ const post = {
 
 **返回数据：**
 
-### 26. 说明
+### 29. 说明
 判断源仓库和克隆仓库的方法：
 -笔记信息的copy_id字段非空则为克隆笔记，值为源仓库id;反之为源仓库，即copy_id='';
 
