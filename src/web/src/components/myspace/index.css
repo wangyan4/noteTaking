@@ -11,7 +11,8 @@
 }
 .mybottomleft, .mybottomright{
   width:50%;
-  height: 70%;
+  height: 100%;
+  padding-top:20px;
 }
 .mybottomleft {
   float:left;
@@ -21,4 +22,8 @@
 .mybottomright {
   float:right;
   /* background-color: red; */
+}
+.centerTitle{
+  width:100%;
+  text-align: center;
 }
